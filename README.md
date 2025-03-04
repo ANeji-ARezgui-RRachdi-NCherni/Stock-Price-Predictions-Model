@@ -9,42 +9,50 @@ The repository is structured as follows:
 
 ```
 ```
-Stock-Price-Predictions/
+stock-price-predictions/
 │── .github/
 │   └── workflows/
-│       └── ci.yml
+│       └── ci.yml  # CI/CD pipeline configuration
+│
 │── data/
-│   ├── processed/
-│   └── raw/
-│── notebooks/
+│   ├── processed/  # Processed datasets
+│   └── raw/        # Raw datasets
+│
+│── notebooks/      # Jupyter notebooks for exploration and analysis
+│
 │── src/
 │   ├── prediction_model/
 │   │   ├── data/
 │   │   │   ├── __init__.py
-│   │   │   └── data.py
+│   │   │   └── data.py  # Data preprocessing
 │   │   ├── model/
 │   │   │   ├── __init__.py
-│   │   │   └── model.py
+│   │   │   └── model.py  # ML model implementation
 │   │   ├── __init__.py
-│   │   └── main.py
+│   │   └── main.py  # Main script for model execution
+│   │
 │   ├── recommender_system/
 │   │   ├── __init__.py
-│   │   └── main.py
+│   │   └── main.py  # Recommender system implementation
+│   │
 │   ├── web/
-│   │   ├── back/
-│   │   ├── front/
+│   │   ├── back/  # Backend implementation (to be defined)
+│   │   ├── front/ # Frontend implementation (to be defined)
 │   │   ├── __init__.py
-│   │   └── main.py
+│   │   └── main.py  # Web application entry point
+│
 │── tests/
 │   ├── prediction_model/
-│   │   ├── test_data.py
-│   │   └── test_model.py
+│   │   ├── test_data.py  # Unit tests for data processing
+│   │   └── test_model.py # Unit tests for model
 │   └── recommender_system/
+│
 │── utils/
-│   └── constants.py
-│── .gitignore
-│── environment.yml
-│── README.md
+│   └── constants.py  # Utility constants
+│
+│── .gitignore       # Git ignore file
+│── environment.yml  # Dependencies and environment configuration
+│── README.md        # Project documentation
 ```
 ```
 
