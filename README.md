@@ -8,18 +8,14 @@ A machine learning model capable of predicting stock prices as well as giving re
 The repository is structured as follows:
 
 ```
-```
 stock-price-predictions/
 │── .github/
 │   └── workflows/
 │       └── ci.yml  # CI/CD pipeline configuration
-│
 │── data/
 │   ├── processed/  # Processed datasets
 │   └── raw/        # Raw datasets
-│
 │── notebooks/      # Jupyter notebooks for exploration and analysis
-│
 │── src/
 │   ├── prediction_model/
 │   │   ├── data/
@@ -30,30 +26,24 @@ stock-price-predictions/
 │   │   │   └── model.py  # ML model implementation
 │   │   ├── __init__.py
 │   │   └── main.py  # Main script for model execution
-│   │
 │   ├── recommender_system/
 │   │   ├── __init__.py
 │   │   └── main.py  # Recommender system implementation
-│   │
 │   ├── web/
 │   │   ├── back/  # Backend implementation (to be defined)
 │   │   ├── front/ # Frontend implementation (to be defined)
 │   │   ├── __init__.py
 │   │   └── main.py  # Web application entry point
-│
 │── tests/
 │   ├── prediction_model/
 │   │   ├── test_data.py  # Unit tests for data processing
 │   │   └── test_model.py # Unit tests for model
 │   └── recommender_system/
-│
 │── utils/
 │   └── constants.py  # Utility constants
-│
 │── .gitignore       # Git ignore file
 │── environment.yml  # Dependencies and environment configuration
 │── README.md        # Project documentation
-```
 ```
 
 ---
