@@ -1,0 +1,9 @@
+name: Stock_Price_Prediction
+dependencies:
+  - python=3.12
+  - pandas
+  - numpy
+  - scikit-learn
+  - jupyter
+  - matplotlib
+  - pytest
