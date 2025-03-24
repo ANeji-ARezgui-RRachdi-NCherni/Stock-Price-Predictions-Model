@@ -7,3 +7,7 @@ dependencies:
   - jupyter
   - matplotlib
   - pytest
+  - pip
+  - pip:
+      - dvc[azure]
+      - azure-cli

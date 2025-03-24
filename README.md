@@ -66,8 +66,12 @@ conda env create -f environment.yml
 conda activate Stock_Price_Prediction
 # in case it didn't work run conda ini then close and re-open the terminal 
 ```
-
-### **3. Set Up Data Directories**
+### **3. Authenticate with Azure**  
+Before using DVC, you need to log in to Azure:  
+```bash
+az login
+```
+### **4. Set Up Data Directories**
 Create the following directories (if not already created):
 ```bash
 mkdir data/raw
@@ -75,7 +79,7 @@ mkdir data/processed
 mkdir notebooks
 ```
 
-### **4. Run the Project**
+### **5. Run the Project**
 Run the main script to start the project:
 ```bash
 python src/main.py
