@@ -1,0 +1,4 @@
+[core]
+    remote = azure-blob
+['remote "azure-blob"']
+    url = azure://datasets

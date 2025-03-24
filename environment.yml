@@ -9,3 +9,7 @@ dependencies:
   - pytest
   - selenium
   - python-dateutil
+  - pip
+  - pip:
+      - dvc[azure]
+      - azure-cli
