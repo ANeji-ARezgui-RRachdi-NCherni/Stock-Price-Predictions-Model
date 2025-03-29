@@ -16,6 +16,16 @@ LINK =  "https://www.ilboursa.com/marches/download/"
 # START_DATE = "01/01/2010"
 
 def get_dates(start):
+    """
+    Converts start date from string format to date object
+    If start date is equal to current date ,it returns todays date value in start_date and end_date
+    input:
+        start: start date in string format "dd/mm/yyyy"
+    Returns:
+        start_date: start date as date object
+        end_date: date after 89 days period as date object
+
+    """
     today=datetime.today().date()
     if datetime.strptime(start, "%d/%m/%Y").date() == today:
         start_date= end_date= today
@@ -25,10 +35,19 @@ def get_dates(start):
     
     return start_date, end_date
 
-def update_dates(end):
-    start=end + relativedelta(days= 1)
-    end=start+relativedelta(days= 89)
-    return start,end
+def update_dates(date):
+    """
+    Updates the date range 
+    input:
+        date: date object
+    Returns:
+        start_date: next day date from input as date object
+        end_date: date after start_date with 89 days period as date object
+
+    """
+    start_date= date + relativedelta(days= 1)
+    end_date=start_date+relativedelta(days= 89)
+    return start_date,end_date
 
 def download_data(start_date, end_date ,driver):
     
@@ -85,6 +104,6 @@ def main(date):
 
 
 if __name__ =="__main__":
-    date=input("enter start date")
+    date=input("enter start date: ")
     main(date) 
 
