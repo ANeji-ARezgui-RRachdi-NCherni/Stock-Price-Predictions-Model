@@ -25,7 +25,6 @@ jobs:
         python-version: 3.10.0
         activate-environment: Stock_Price_Prediction
         environment-file: /environment.yml
-        miniconda-version: "23.5.2"
     - name: Test with pytest
       run: |
         if find . -type f \( -name "test_*.py" -o -name "*_test.py" \) -exec grep -q "^def test_" {} +; then
