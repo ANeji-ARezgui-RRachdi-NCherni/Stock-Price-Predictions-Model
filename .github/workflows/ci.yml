@@ -9,35 +9,43 @@ on:
 jobs:
   build-linux:
     runs-on: ubuntu-20.04
-    defaults:
-      run:
-        shell: bash -el {0}
     strategy:
       max-parallel: 5
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up Python 3.10.0
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10.0' 
-    - uses: conda-incubator/setup-miniconda@v2
-      with:
-        miniconda-version: 'latest'
-        channels: conda-forge
-        mamba-version: "*"
-        channel-priority: true
-        auto-update-conda: false
-        auto-activate-base: false
-        environment-file: environment.yml
-        activate-environment: Stock_Price_Prediction
-        python-version: 3.10.0
+        python-version: '3.10.0'
+
+    - name: Install Conda 23.5.2
+      run: |
+        wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh -O miniconda.sh
+        bash miniconda.sh -b -p $HOME/miniconda
+        echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+        source $HOME/miniconda/bin/activate      
+        conda init bash  # Ensure Conda is initialized properly
+
+    - name: Create and Activate Conda Environment
+      run: |
+        conda env create --file environment.yml --name stock_env
+        echo "source activate stock_env" >> ~/.bashrc  # Ensure activation works
+        conda activate stock_env
+        conda info --envs  # Debugging step to verify activation
+
+    - name: Install Dependencies
+      run: |
+        conda activate stock_env
+        conda install pytest  # Ensure pytest is installed
+
     - name: Test with pytest
       run: |
+        conda activate stock_env
         if find . -type f \( -name "test_*.py" -o -name "*_test.py" \) -exec grep -q "^def test_" {} +; then
           echo "Non-empty test files found. Running pytest..."
-          cd tests
-          pytest
+          pytest tests/
         else
-            echo "No valid tests to run (files are missing or empty)."
+          echo "No valid tests found."
         fi
