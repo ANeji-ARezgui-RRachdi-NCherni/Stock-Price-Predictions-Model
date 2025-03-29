@@ -25,24 +25,26 @@ jobs:
         wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh -O miniconda.sh
         bash miniconda.sh -b -p $HOME/miniconda
         echo "$HOME/miniconda/bin" >> $GITHUB_PATH
-        source $HOME/miniconda/bin/activate      
-        conda init bash  # Ensure Conda is initialized properly
 
-    - name: Create and Activate Conda Environment
+    - name: Create Conda Environment
+      shell: bash -l {0}
       run: |
-        conda env create --file environment.yml --name stock_env
-        echo "source activate stock_env" >> ~/.bashrc  # Ensure activation works
-        conda activate stock_env
-        conda info --envs  # Debugging step to verify activation
+        source $HOME/miniconda/bin/activate
+        conda init bash
+        conda env create --file environment.yml --name Stock_Price_Prediction
+        echo "CONDA_ENV_PATH=$HOME/miniconda/envs/Stock_Price_Prediction" >> $GITHUB_ENV
 
     - name: Install Dependencies
+      shell: bash -l {0}
       run: |
-        conda activate stock_env
-        conda install pytest  # Ensure pytest is installed
+        source $HOME/miniconda/bin/activate
+        conda activate Stock_Price_Prediction
 
     - name: Test with pytest
+      shell: bash -l {0}
       run: |
-        conda activate stock_env
+        source $HOME/miniconda/bin/activate
+        conda activate Stock_Price_Prediction
         if find . -type f \( -name "test_*.py" -o -name "*_test.py" \) -exec grep -q "^def test_" {} +; then
           echo "Non-empty test files found. Running pytest..."
           pytest tests/
