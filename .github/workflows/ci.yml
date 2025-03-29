@@ -27,6 +27,7 @@ jobs:
     - name: Install dependencies
       run: |
          conda env create -f environment.yml
+         conda init
          conda activate Stock_Price_Prediction
     - name: Test with pytest
       run: |
