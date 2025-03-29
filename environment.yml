@@ -10,6 +10,7 @@ dependencies:
   - selenium
   - python-dateutil
   - pip
+  - python-dotenv
   - pip:
       - dvc[azure]
       - azure-cli
