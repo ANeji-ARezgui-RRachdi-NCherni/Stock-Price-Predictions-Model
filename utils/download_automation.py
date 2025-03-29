@@ -8,6 +8,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import os
 from dotenv import load_dotenv
+import argparse
 
 
 load_dotenv()
@@ -104,6 +105,8 @@ def main(date):
 
 
 if __name__ =="__main__":
-    date=input("enter start date: ")
-    main(date) 
+    parser = argparse.ArgumentParser(description="Download automation for stock data.")
+    parser.add_argument("--date", required=True, help="Start date in dd/mm/YYYY format")
+    args = parser.parse_args()
+    main(args.date)
 
