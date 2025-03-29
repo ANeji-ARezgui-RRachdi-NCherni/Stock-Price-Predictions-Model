@@ -1,2 +1,0 @@
-conda init bash
-conda activate Stock_Price_Prediction
