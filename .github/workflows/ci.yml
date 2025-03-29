@@ -14,26 +14,42 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up Python 3.10.0
       uses: actions/setup-python@v5
       with:
         python-version: '3.10.0'
+
     - name: Install Conda 23.5.2
       run: |
         wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh -O miniconda.sh
         bash miniconda.sh -b -p $HOME/miniconda
         echo "$HOME/miniconda/bin" >> $GITHUB_PATH
-        source $HOME/miniconda/bin/activate      
-    - name: Install dependencies
+
+    - name: Create Conda Environment
+      shell: bash -l {0}
       run: |
-        conda env update --file environment.yml --name base
+        source $HOME/miniconda/bin/activate
+        conda init bash
+        conda env create --file environment.yml --name Stock_Price_Prediction
+
     - name: Test with pytest
+      shell: bash -l {0}
       run: |
-        conda install pytest
+        source $HOME/miniconda/bin/activate
+        conda activate Stock_Price_Prediction
+        
+        # Set PYTHONPATH to include the project root
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
+        
+        # Debug: Show the directory structure and PYTHONPATH
+        echo "Current directory structure:"
+        ls -la
+        echo "PYTHONPATH: $PYTHONPATH"
+        
         if find . -type f \( -name "test_*.py" -o -name "*_test.py" \) -exec grep -q "^def test_" {} +; then
           echo "Non-empty test files found. Running pytest..."
-          cd tests
-          pytest
+          pytest tests/ -v
         else
-            echo "No valid tests to run (files are missing or empty)."
+          echo "No valid tests found."
         fi
