@@ -30,7 +30,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Pull Latest Dataset from Azure Blob Storage
-        run: dvc pull || echo "DVC Pull failed, check permissions"
+        run: dvc pull
 
       - name: Submit Training Job to Azure ML (Placeholder)
         run: echo "Training model on Azure ML (To be implemented)"
