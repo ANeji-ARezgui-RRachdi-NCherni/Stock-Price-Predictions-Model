@@ -26,10 +26,10 @@ jobs:
         source $HOME/miniconda/bin/activate      
     - name: Install dependencies
       run: |
-        conda env update --file environment.yml --name base
+         conda env create -f environment.yml
+         conda activate Stock_Price_Prediction
     - name: Test with pytest
       run: |
-        conda install pytest
         if find . -type f \( -name "test_*.py" -o -name "*_test.py" \) -exec grep -q "^def test_" {} +; then
           echo "Non-empty test files found. Running pytest..."
           cd tests
