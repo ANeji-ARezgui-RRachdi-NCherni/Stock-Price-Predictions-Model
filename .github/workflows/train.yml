@@ -1,0 +1,36 @@
+name: Azure ML Training Pipeline
+
+on:
+  push:
+    paths:
+      - data/processed/**  # Trigger when processed data is updated
+    branches:
+      - main
+
+jobs:
+  train-model:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          pip install dvc[azure] azureml-sdk
+
+      - name: Authenticate with Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Pull Latest Dataset from Azure Blob Storage
+        run: dvc pull || echo "DVC Pull failed, check permissions"
+
+      - name: Submit Training Job to Azure ML (Placeholder)
+        run: echo "Training model on Azure ML (To be implemented)"
