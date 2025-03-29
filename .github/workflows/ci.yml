@@ -23,8 +23,6 @@ jobs:
         python-version: '3.10.0' 
     - uses: conda-incubator/setup-miniconda@v3
       with:
-        auto-update-conda: false
-        auto-activate-base: false
         python-version: 3.10.0
         activate-environment: Stock_Price_Prediction
         environment-file: /environment.yml
