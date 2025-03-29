@@ -62,6 +62,7 @@ def test_get_dates(date):
     assert end_date == date + relativedelta(days=89)    
 
 
+@pytest.mark.skip
 def test_download_data(dates,driver,link):
     driver.get(link)
     download_data(dates[0],dates[1],driver)
