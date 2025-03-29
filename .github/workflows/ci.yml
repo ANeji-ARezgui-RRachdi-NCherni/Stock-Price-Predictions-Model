@@ -22,9 +22,8 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Downgrade conda to 24.9.1
-      run: |
-        conda install conda=24.9.1
+    - name: Install Specific Anaconda Version
+      run: conda install -n base conda=23.5.2
     - name: Install dependencies
       run: |
         conda env update --file environment.yml --name base
