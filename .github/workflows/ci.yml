@@ -25,7 +25,6 @@ jobs:
           activate: true
           envName: Stock_Price_Prediction
           pythonVersion: 3.10.0
-          condaFile: environment.yml
     - name: Test with pytest
       run: |
         if find . -type f \( -name "test_*.py" -o -name "*_test.py" \) -exec grep -q "^def test_" {} +; then
