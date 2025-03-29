@@ -18,14 +18,12 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.10.0'
-    - name: Add conda to system path
+    - name: Install Conda 23.5.2
       run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install Python 3.10.0 in Conda
-      run: conda install -n base python=3.10.0
-    - name: Install Specific Anaconda Version
-      run: conda install -n base conda=23.5.2
+        wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.2-Linux-x86_64.sh -O miniconda.sh
+        bash miniconda.sh -b -p $HOME/miniconda
+        echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+        source $HOME/miniconda/bin/activate      
     - name: Install dependencies
       run: |
         conda env update --file environment.yml --name base
