@@ -27,8 +27,7 @@ jobs:
     - name: Install dependencies
       run: |
          conda env create -f environment.yml
-         MYSHELL=`ps -hp $$|awk '{print $5}'`
-         conda init $MYSHELL
+         conda init bash
          conda activate Stock_Price_Prediction
     - name: Test with pytest
       run: |
