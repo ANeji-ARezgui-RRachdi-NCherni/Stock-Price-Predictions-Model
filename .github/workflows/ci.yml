@@ -22,8 +22,8 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Debug Conda Python Version
-      run: conda info && conda list python
+    - name: Install Python 3.10.0 in Conda
+      run: conda install -n base python=3.10.0
     - name: Install Specific Anaconda Version
       run: conda install -n base conda=23.5.2
     - name: Install dependencies
