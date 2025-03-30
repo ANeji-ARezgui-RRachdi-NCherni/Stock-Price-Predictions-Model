@@ -2,14 +2,15 @@ name: Azure ML Training Pipeline
 
 on:
   push:
-    paths:
-      - data/processed/**  # Trigger when processed data is updated
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
 jobs:
   train-model:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout Repository
@@ -18,11 +19,20 @@ jobs:
       - name: Set Up Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.10.0"
 
-      - name: Install Dependencies
+      - name: Install Conda 23.5.2
         run: |
-          pip install dvc[azure] azureml-sdk
+          wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh -O miniconda.sh
+          bash miniconda.sh -b -p $HOME/miniconda
+          echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+
+      - name: Create Conda Environment
+        shell: bash -l {0}
+        run: |
+          source $HOME/miniconda/bin/activate
+          conda init bash
+          conda env create --file environment.yml --name Stock_Price_Prediction
 
       - name: Authenticate with Azure
         uses: azure/login@v1
@@ -30,7 +40,25 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Pull Latest Dataset from Azure Blob Storage
-        run: dvc pull
+        shell: bash -l {0}
+        run: |
+          source $HOME/miniconda/bin/activate
+          conda activate Stock_Price_Prediction
+          dvc pull
 
-      - name: Submit Training Job to Azure ML (Placeholder)
-        run: echo "Training model on Azure ML (To be implemented)"
+      - name: Run Training Job
+        shell: bash -l {0}
+        run: |
+          source $HOME/miniconda/bin/activate
+          conda activate Stock_Price_Prediction
+          
+          # Set PYTHONPATH to include the project root
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          
+          # Debug: Show the directory structure and PYTHONPATH
+          echo "Current directory structure:"
+          ls -la
+          echo "PYTHONPATH: $PYTHONPATH"
+
+          # Run the training script
+          echo "Training model on Azure ML (To be implemented)"
