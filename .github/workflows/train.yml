@@ -5,7 +5,7 @@ on:
     paths:
       - data/processed/**  # Trigger when processed data is updated
     branches:
-      - rami/initializing-model-training-pipeline
+      - main
 
 jobs:
   train-model:
