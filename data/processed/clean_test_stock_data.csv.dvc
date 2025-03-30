@@ -1,0 +1,5 @@
+outs:
+- md5: 8c07be920f9303738ed2bd0e8a4615fe
+  size: 150
+  hash: md5
+  path: clean_test_stock_data.csv
