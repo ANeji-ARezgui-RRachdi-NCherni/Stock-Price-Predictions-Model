@@ -54,7 +54,7 @@ jobs:
       run: |
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
-          python utils/download_automation.py $CURRENT_DATE
+          python utils/download_automation.py --date $CURRENT_DATE
     
 
  
