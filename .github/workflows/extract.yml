@@ -51,7 +51,10 @@ jobs:
       run: echo "CURRENT_DATE=$(date +'%d/%m/%y')" >> $GITHUB_ENV  
     
     - name: Download Data
-      run: python utils/download_automation.py $CURRENT_DATE
+      run: |
+          source $HOME/miniconda/bin/activate
+          conda activate Stock_Price_Prediction 
+          python utils/download_automation.py $CURRENT_DATE
     
 
  
