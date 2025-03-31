@@ -3,6 +3,7 @@ name: Data Extraction Pipeline
 on:
   schedule:
     - cron: '0 0 * * *'  # runs every day at midnight (UTC)
+  workflow_dispatch:
 
 jobs:
   extract-data:
