@@ -9,12 +9,10 @@ from dateutil.relativedelta import relativedelta
 import os
 from dotenv import load_dotenv
 import argparse
+from utils import LINK, links
 
 
 load_dotenv()
-#constants
-LINK =  "https://www.ilboursa.com/marches/download/"
-# START_DATE = "01/01/2010"
 
 def get_dates(start):
     """
@@ -84,10 +82,7 @@ def main(date):
     service = Service(executable_path=edgedriver_path)
     driver = webdriver.Edge(service=service)
 
-    # Stock Symbols
-    links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
-    "CELL","CC","BTE","BIAT","BHL","BH","BHASS","BL","BNA","BT","TJARI","TJL","AST",
-    "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
+    
 
     today=datetime.today().date()
 
