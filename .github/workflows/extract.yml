@@ -1,0 +1,51 @@
+name: Data Extraction Pipeline
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # runs every day at midnight (UTC)
+
+jobs:
+  extract-data:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set Up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10.0"
+
+    - name: Install Conda 23.5.2
+      run: |
+        wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.2-0-Linux-x86_64.sh -O miniconda.sh
+        bash miniconda.sh -b -p $HOME/miniconda
+        echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+
+    - name: Create Conda Environment
+      shell: bash -l {0}
+      run: |
+        source $HOME/miniconda/bin/activate
+        conda init bash
+        conda env create --file environment.yml --name Stock_Price_Prediction
+
+    - name: Authenticate with Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Setup Edge browser 
+      uses: browser-actions/setup-edge@v1
+    
+    - name: Print Edge version
+      run: (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
+
+    - name: Get Current Date
+      run: echo "CURRENT_DATE=$(date +'%d/%m/%y')" >> $GITHUB_ENV  
+    
+    - name: Download Data
+      run: python download_automation.py $CURRENT_DATE
+    
+
+ 
