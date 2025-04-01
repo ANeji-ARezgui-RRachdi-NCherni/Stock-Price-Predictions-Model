@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.edge.service import Service
+from selenium.webdriver.edge.options import Options 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -9,6 +10,8 @@ from dateutil.relativedelta import relativedelta
 import os
 from dotenv import load_dotenv
 import argparse
+import tempfile
+
 
 
 load_dotenv()
@@ -77,6 +80,12 @@ def download_data(start_date, end_date ,driver):
             
             
 def main(date):
+
+    temp_user_data = tempfile.mkdtemp()
+    # Set up Edge options and add the unique user data directory
+    options = Options()
+    options.add_argument(f'--user-data-dir={temp_user_data}')
+
     # browser webdriver
     edgedriver_path =os.getenv('WEB_DRIVER_PATH')
     if not edgedriver_path:
@@ -84,7 +93,7 @@ def main(date):
 
     # Set up EdgeDriver
     service = Service(executable_path=edgedriver_path)
-    driver = webdriver.Edge(service=service)
+    driver = webdriver.Edge(options=options, service=service)
 
     # Stock Symbols
     links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
