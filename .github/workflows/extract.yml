@@ -61,7 +61,14 @@ jobs:
       run: |
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
-          python utils/download_automation.py --date $CURRENT_DATE
+          python utils/download_automation.py --date 27/03/2025
+
+    - name: List downloaded CSV files
+      run: ls -la *.csv
+    
+    # - name: Load the CSV files to azure storage
+    #   run: dvc push 
+  
     
 
  
