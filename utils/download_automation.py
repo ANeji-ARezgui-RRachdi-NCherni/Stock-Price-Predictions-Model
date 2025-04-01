@@ -81,38 +81,41 @@ def download_data(start_date, end_date ,driver):
             
 def main(date):
 
-    temp_user_data = tempfile.mkdtemp()
     # Set up Edge options and add the unique user data directory
     options = Options()
-    options.add_argument(f'--user-data-dir={temp_user_data}')
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
 
-    # browser webdriver
-    edgedriver_path =os.getenv('WEB_DRIVER_PATH')
-    if not edgedriver_path:
-        raise EnvironmentError("WEB_DRIVER_PATH not set!")
+    with tempfile.TemporaryDirectory() as user_data_dir:
+        options.add_argument(f'--user-data-dir={user_data_dir}')
+        # browser webdriver
+        edgedriver_path =os.getenv('WEB_DRIVER_PATH')
+        if not edgedriver_path:
+            raise EnvironmentError("WEB_DRIVER_PATH not set!")
 
-    # Set up EdgeDriver
-    service = Service(executable_path=edgedriver_path)
-    driver = webdriver.Edge(options=options, service=service)
+        # Set up EdgeDriver
+        service = Service(executable_path=edgedriver_path)
+        driver = webdriver.Edge(options=options, service=service)
 
-    # Stock Symbols
-    links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
-    "CELL","CC","BTE","BIAT","BHL","BH","BHASS","BL","BNA","BT","TJARI","TJL","AST",
-    "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
+        # Stock Symbols
+        links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
+        "CELL","CC","BTE","BIAT","BHL","BH","BHASS","BL","BNA","BT","TJARI","TJL","AST",
+        "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
 
-    today=datetime.today().date()
+        today=datetime.today().date()
 
-    for link in links:
+        for link in links:
 
-        start_date, end_date= get_dates(date)
-        driver.get(LINK+link)
+            start_date, end_date= get_dates(date)
+            driver.get(LINK+link)
 
-        while  today >= start_date: 
-            download_data(start_date,end_date,driver)
-            #update the start and end dates
-            start_date, end_date = update_dates(end_date)
-    # Close the browser after processing all the links
-    driver.quit()
+            while  today >= start_date: 
+                download_data(start_date,end_date,driver)
+                #update the start and end dates
+                start_date, end_date = update_dates(end_date)
+        # Close the browser after processing all the links
+        driver.quit()
 
 
 if __name__ =="__main__":
