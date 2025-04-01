@@ -47,6 +47,13 @@ jobs:
       shell: pwsh
       run: (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
 
+    - name: Install Edge WebDriver
+      run: |
+        wget https://msedgedriver.azureedge.net/135.0.3179.41/edgedriver_linux64.zip -O msedgedriver.zip
+        unzip msedgedriver.zip -d msedgedriver
+        chmod +x msedgedriver/msedgedriver
+        echo "WEB_DRIVER_PATH=$(pwd)/msedgedriver/msedgedriver" >> $GITHUB_ENV  
+
     - name: Get Current Date
       run: echo "CURRENT_DATE=$(date +'%d/%m/%y')" >> $GITHUB_ENV  
     

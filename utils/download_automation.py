@@ -79,6 +79,8 @@ def download_data(start_date, end_date ,driver):
 def main(date):
     # browser webdriver
     edgedriver_path =os.getenv('WEB_DRIVER_PATH')
+    if not edgedriver_path:
+        raise EnvironmentError("WEB_DRIVER_PATH not set!")
 
     # Set up EdgeDriver
     service = Service(executable_path=edgedriver_path)
