@@ -60,7 +60,7 @@ jobs:
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           python utils/download_automation.py --date 27/03/2025
-          find / -type f -iname "*.csv" 2>/dev/null
+          find / -type f -iname "cotations_HL.csv" 2>/dev/null
 
           
           
