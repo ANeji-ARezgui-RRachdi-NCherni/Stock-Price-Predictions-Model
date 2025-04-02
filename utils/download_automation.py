@@ -82,9 +82,9 @@ def download_data(start_date, end_date ,driver):
             
 def main(date):
     #download directory
-    download_dir = os.path.join(os.getcwd(), "downloads")
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
+    download_dir = "downloads"
+    # if not os.path.exists(download_dir):
+    #     os.makedirs(download_dir)
 
     # Set up Edge options and add the unique user data directory
     options = Options()
@@ -117,6 +117,8 @@ def main(date):
         "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
 
         today=datetime.today().date()
+        # abs_download_dir = os.path.join(os.getcwd(), "downloads")
+
 
         for link in links:
 
