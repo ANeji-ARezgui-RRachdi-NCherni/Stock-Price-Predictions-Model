@@ -64,7 +64,7 @@ jobs:
           python utils/download_automation.py --date 27/03/2025
 
     - name: List downloaded CSV files
-      run: ls -la $HOME || echo "No Downloads directory found."
+      run: ls -la $(pwd)/downloads || echo "No Downloads directory found."
     
     # - name: Load the CSV files to azure storage
     #   run: dvc push 

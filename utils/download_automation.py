@@ -80,12 +80,24 @@ def download_data(start_date, end_date ,driver):
             
             
 def main(date):
+    #download directory
+    download_dir = os.path.join(os.getcwd(), "downloads")
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
 
     # Set up Edge options and add the unique user data directory
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
+    
+
+    # Set preferences for downloads (if supported by the driver)
+    options.add_experimental_option("prefs", {
+        "download.default_directory": download_dir,
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True
+    })
 
     with tempfile.TemporaryDirectory() as user_data_dir:
         options.add_argument(f'--user-data-dir={user_data_dir}')
