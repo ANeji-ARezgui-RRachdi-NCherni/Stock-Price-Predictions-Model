@@ -62,7 +62,9 @@ jobs:
           python utils/download_automation.py --date 27/03/2025
 
     - name: List downloaded CSV files
-      run: ls /home/runner/work/Stock-Price-Predictions-Model/Stock-Price-Predictions-Model/*.csv || echo "No Downloads directory found."
+      run: |
+        cd /downloads
+        ls *.csv || echo "No Downloads directory found."
     
     # - name: Load the CSV files to azure storage
     #   run: dvc push 
