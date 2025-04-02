@@ -62,6 +62,7 @@ jobs:
           python utils/download_automation.py --date 27/03/2025
           cd "$GITHUB_WORKSPACE/downloads" || echo "No Downloads directory found."
           ls -la || echo "No csv files found."
+          find . -type f -iname "*.csv"
 
     # - name: List downloaded CSV files
     #   run: |
