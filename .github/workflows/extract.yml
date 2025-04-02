@@ -53,18 +53,16 @@ jobs:
         unzip msedgedriver.zip -d msedgedriver
         chmod +x msedgedriver/msedgedriver
         echo "WEB_DRIVER_PATH=$(pwd)/msedgedriver/msedgedriver" >> $GITHUB_ENV  
-
-    - name: Get Current Date
-      run: echo "CURRENT_DATE=$(date +'%d/%m/%Y')" >> $GITHUB_ENV  
-    
+  
     - name: Download Data
       run: |
+          current_date=$(date +'%d/%m/%Y')
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           python utils/download_automation.py --date 27/03/2025
 
     - name: List downloaded CSV files
-      run: ls -la $(pwd)/downloads || echo "No Downloads directory found."
+      run: ls -la /home/runner/work/Stock-Price-Predictions-Model/Stock-Price-Predictions-Model/downloads/*.csv || echo "No Downloads directory found."
     
     # - name: Load the CSV files to azure storage
     #   run: dvc push 
