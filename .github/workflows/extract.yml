@@ -61,7 +61,7 @@ jobs:
           conda activate Stock_Price_Prediction 
           python utils/download_automation.py --date 27/03/2025
           cd "$GITHUB_WORKSPACE/downloads" || echo "No Downloads directory found."
-          ls *.csv || echo "No csv files found."
+          ls -la || echo "No csv files found."
 
     # - name: List downloaded CSV files
     #   run: |
