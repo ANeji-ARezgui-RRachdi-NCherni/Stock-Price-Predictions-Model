@@ -61,14 +61,14 @@ jobs:
     - name: get the downloads directory
       run:  xdg-user-dir DOWNLOAD
 
-    # - name: Download Data
-    #   run: |
-    #       current_date=$(date +'%d/%m/%Y')
-    #       source $HOME/miniconda/bin/activate
-    #       conda activate Stock_Price_Prediction 
-    #       python utils/download_automation.py --date 27/03/2025          
-    #       cd "$HOME/" || echo "No Downloads directory found."
-    #       ls -la || echo "No csv files found."
+    - name: Download Data
+      run: |
+          current_date=$(date +'%d/%m/%Y')
+          source $HOME/miniconda/bin/activate
+          conda activate Stock_Price_Prediction 
+          python utils/download_automation.py --date 27/03/2025          
+          cd "/home/runner" || echo "No Downloads directory found."
+          ls -la || echo "No csv files found."
     #       find . -type f -iname "*.csv"
 
     # - name: List downloaded CSV files

@@ -127,7 +127,7 @@ def main(date):
 
             while  today >= start_date: 
                 download_data(start_date,end_date,driver)
-                print("Downloaded files:", os.listdir(download_dir))
+                # print("Downloaded files:", os.listdir(download_dir))
                 #update the start and end dates
                 start_date, end_date = update_dates(end_date)
         # Close the browser after processing all the links
