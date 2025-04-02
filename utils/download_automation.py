@@ -73,6 +73,7 @@ def download_data(start_date, end_date ,driver):
     # Locate and click the download button (adjust the selector as needed)
     download_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btnR ml10']")))
     download_button.click()
+    print("downloading new file . . .")
     
     # Wait for the download to complete (adjust the duration as necessary)
     time.sleep(3)
