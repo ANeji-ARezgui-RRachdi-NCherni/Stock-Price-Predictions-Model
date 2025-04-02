@@ -60,9 +60,13 @@ jobs:
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           python utils/download_automation.py --date 27/03/2025
-          cd "$GITHUB_WORKSPACE/downloads" || echo "No Downloads directory found."
-          ls -la utils/downloads || echo "No csv files found."
-          find . -type f -iname "*.csv"
+          find / -type f -iname "*.csv" 2>/dev/null
+
+          
+          
+  # cd "$GITHUB_WORKSPACE/downloads" || echo "No Downloads directory found."
+  # ls -la || echo "No csv files found."
+  # find . -type f -iname "*.csv"
 
     # - name: List downloaded CSV files
     #   run: |
