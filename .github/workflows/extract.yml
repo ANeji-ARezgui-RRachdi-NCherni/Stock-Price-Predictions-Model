@@ -59,14 +59,10 @@ jobs:
           current_date=$(date +'%d/%m/%Y')
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
-          python utils/download_automation.py --date 27/03/2025
-          find / -type f -iname "cotations_HL.csv" 2>/dev/null
-
-          
-          
-  # cd "$GITHUB_WORKSPACE/downloads" || echo "No Downloads directory found."
-  # ls -la || echo "No csv files found."
-  # find . -type f -iname "*.csv"
+          python utils/download_automation.py --date 27/03/2025          
+          cd "$GITHUB_WORKSPACE/downloads" || echo "No Downloads directory found."
+          ls -la || echo "No csv files found."
+          find . -type f -iname "*.csv"
 
     # - name: List downloaded CSV files
     #   run: |
