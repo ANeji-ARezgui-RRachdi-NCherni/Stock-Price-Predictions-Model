@@ -64,19 +64,19 @@ jobs:
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           python utils/download_automation.py --date 27/03/2025          
-          cd "/usr" || echo "No Downloads directory found."
-          ls -la || echo "No csv files found."
+          cd "~/Downloads" || echo "No Downloads directory found."
+          ls -a || echo "No csv files found."
           find . -type f -iname "*.csv"
 
           
-    - name: Data transformation
-      run: |
-        source $HOME/miniconda/bin/activate
-        conda activate Stock_Price_Prediction 
+    # - name: Data transformation
+    #   run: |
+    #     source $HOME/miniconda/bin/activate
+    #     conda activate Stock_Price_Prediction 
         
 
-    - name: Load the CSV files to azure storage
-      run: dvc push 
+    # - name: Load the CSV files to azure storage
+    #   run: dvc push 
   
     
 
