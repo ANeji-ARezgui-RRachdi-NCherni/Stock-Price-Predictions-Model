@@ -46,9 +46,6 @@ jobs:
       shell: pwsh
       run: (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
       
-    # - name: Print Edge version
-    
-    #   run: (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
 
     - name: Install Edge WebDriver
       run: |
@@ -67,17 +64,19 @@ jobs:
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           python utils/download_automation.py --date 27/03/2025          
-          cd "/home/runner" || echo "No Downloads directory found."
+          cd "/usr" || echo "No Downloads directory found."
           ls -la || echo "No csv files found."
           find . -type f -iname "*.csv"
 
-    # - name: List downloaded CSV files
-    #   run: |
-    #     cd /downloads
-    #     ls *.csv || echo "No Downloads directory found."
-    
-    # - name: Load the CSV files to azure storage
-    #   run: dvc push 
+          
+    - name: Data transformation
+      run: |
+        source $HOME/miniconda/bin/activate
+        conda activate Stock_Price_Prediction 
+        
+
+    - name: Load the CSV files to azure storage
+      run: dvc push 
   
     
 
