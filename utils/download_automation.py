@@ -73,7 +73,6 @@ def download_data(start_date, end_date ,driver):
     # Locate and click the download button (adjust the selector as needed)
     download_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btnR ml10']")))
     download_button.click()
-    print("downloading new file . . .")
     
     # Wait for the download to complete (adjust the duration as necessary)
     time.sleep(3)
@@ -82,9 +81,9 @@ def download_data(start_date, end_date ,driver):
             
 def main(date):
     #download directory
-    download_dir = "downloads"
-    # if not os.path.exists(download_dir):
-    #     os.makedirs(download_dir)
+    download_dir = os.path.join(os.getcwd(), "data\\raw") 
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
 
     # Set up Edge options and add the unique user data directory
     options = Options()
@@ -95,7 +94,7 @@ def main(date):
 
     # Set preferences for downloads (if supported by the driver)
     options.add_experimental_option("prefs", {
-        "download.default_directory": download_dir,
+        "download.default_directory":  download_dir,
         "download.prompt_for_download": False,
         "download.directory_upgrade": True
     })
@@ -127,7 +126,6 @@ def main(date):
 
             while  today >= start_date: 
                 download_data(start_date,end_date,driver)
-                # print("Downloaded files:", os.listdir(download_dir))
                 #update the start and end dates
                 start_date, end_date = update_dates(end_date)
         # Close the browser after processing all the links
