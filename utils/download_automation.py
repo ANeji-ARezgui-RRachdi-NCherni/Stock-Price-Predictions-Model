@@ -81,7 +81,7 @@ def download_data(start_date, end_date ,driver):
             
 def main(date):
     #download directory
-    download_dir = os.path.join(os.getcwd(), "data\\raw") 
+    download_dir = os.path.join(os.getcwd(), "data") 
     if not os.path.exists(download_dir):
         os.makedirs(download_dir)
 

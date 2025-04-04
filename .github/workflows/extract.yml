@@ -64,7 +64,7 @@ jobs:
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           python utils/download_automation.py --date 27/03/2025          
-          cd "data\raw" || echo "No Downloads directory found."
+          cd "data" || echo "No Downloads directory found."
           ls -a || echo "No csv files found."
           find . -type f -iname "*.csv"
 
