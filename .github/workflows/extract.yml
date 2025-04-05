@@ -51,7 +51,7 @@ jobs:
       run: sudo apt install -y chromium-browser
 
     - name: Install Chrome Dependencies
-      run: sudo apt install -y libxss1 libappindicator3-1 libindicator7  
+      run: sudo apt install libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2  
 
     - name: Download Data
       run: |
