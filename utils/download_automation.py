@@ -83,24 +83,22 @@ def main(date):
 
     chrome_options = Options()
     options = [
-    "--headless=new",
+    "--headless",
     "--disable-gpu",
-    # "--window-size=1920,1200",
-    # "--ignore-certificate-errors",
-    # "--disable-extensions",
+    "--window-size=1920,1200",
+    "--ignore-certificate-errors",
+    "--disable-extensions",
     "--no-sandbox",
-    "--user-data-dir=/tmp/user_data",
-    # "--disable-dev-shm-usage"
+    "--user-data-dir= /tmp/user-data",
+    "--disable-dev-shm-usage"
 ]
     for option in options:
         chrome_options.add_argument(option)
 
-    # with tempfile.TemporaryDirectory() as user_data_dir:
-    #     chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
 
         # Set up Driver
         driver = webdriver.Chrome(service=ChromiumService(
-            ChromeDriverManager(
+                ChromeDriverManager(
                 chrome_type=ChromeType.CHROMIUM).install()))
         # Stock Symbols
         links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
