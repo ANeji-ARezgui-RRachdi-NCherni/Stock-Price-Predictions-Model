@@ -89,6 +89,7 @@ def main(date):
     # "--ignore-certificate-errors",
     # "--disable-extensions",
     "--no-sandbox",
+    "--user-data-dir=/tmp/user_data",
     # "--disable-dev-shm-usage"
 ]
     for option in options:
@@ -100,7 +101,6 @@ def main(date):
         # Set up Driver
         driver = webdriver.Chrome(service=ChromiumService(
             ChromeDriverManager(
-                driver_version= "135.0.7049.42",
                 chrome_type=ChromeType.CHROMIUM).install()))
         # Stock Symbols
         links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
