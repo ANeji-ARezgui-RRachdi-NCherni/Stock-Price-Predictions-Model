@@ -131,7 +131,7 @@ data/processed/*
 
 # Model and Data files (Ignored because they are tracked via DVC)
 *.xls
-*.csv
+# *.csv
 *.h5
 *.hdf5
 *.parquet
