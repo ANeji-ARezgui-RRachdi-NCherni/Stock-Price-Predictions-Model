@@ -89,6 +89,7 @@ def main(date):
     "--ignore-certificate-errors",
     "--disable-extensions",
     "--no-sandbox",
+    "--no-first-run",
     "--user-data-dir= /tmp/user-data",
     "--disable-dev-shm-usage"
 ]
