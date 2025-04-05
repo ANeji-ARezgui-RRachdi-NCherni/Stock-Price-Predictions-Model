@@ -58,13 +58,19 @@ jobs:
           current_date=$(date +'%d/%m/%Y')
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
-          python utils/download_automation.py --date 27/03/2025          
+          python utils/download_automation.py --date 27/03/2025  
+          cd data        
           ls -la || echo "No csv files found."
           find . -type f -iname "*.csv"
-
-    - name: look for all csv files
-      run: find / -type f -iname "*.csv" 2>/dev/null  
-  
+    
+          
+    - name: Upload downloaded CSV files artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: downloaded-csv-files
+        path: data/*.csv      
+    
+    
     
 
  
