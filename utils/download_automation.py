@@ -94,7 +94,7 @@ def main(date):
     for option in options:
         chrome_options.add_argument(option)
     # Set up Driver
-    service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+    service=ChromiumService(ChromeDriverManager(driver_version="134.0.6998.0", chrome_type=ChromeType.CHROMIUM).install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
     # Stock Symbols
     links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
