@@ -83,7 +83,7 @@ def main(date):
 
     chrome_options = Options()
     options = [
-    "--headless",
+    "--headless=new",
     "--disable-gpu",
     "--window-size=1920,1200",
     "--ignore-certificate-errors",
@@ -94,32 +94,32 @@ def main(date):
     for option in options:
         chrome_options.add_argument(option)
 
-    with tempfile.TemporaryDirectory() as user_data_dir:
-        chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
+    # with tempfile.TemporaryDirectory() as user_data_dir:
+    #     chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
 
         # Set up Driver
-        driver = webdriver.Chrome(service=ChromiumService(
-            ChromeDriverManager(
-                driver_version= "135.0.7049.42",
-                chrome_type=ChromeType.CHROMIUM).install()))
-        # Stock Symbols
-        links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
-        "CELL","CC","BTE","BIAT","BHL","BH","BHASS","BL","BNA","BT","TJARI","TJL","AST",
-        "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
+    driver = webdriver.Chrome(service=ChromiumService(
+        ChromeDriverManager(
+            driver_version= "135.0.7049.42",
+            chrome_type=ChromeType.CHROMIUM).install()))
+    # Stock Symbols
+    links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
+    "CELL","CC","BTE","BIAT","BHL","BH","BHASS","BL","BNA","BT","TJARI","TJL","AST",
+    "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
 
-        today=datetime.today().date()
+    today=datetime.today().date()
 
-        for link in links:
+    for link in links:
 
-            start_date, end_date= get_dates(date)
-            driver.get(LINK+link)
+        start_date, end_date= get_dates(date)
+        driver.get(LINK+link)
 
-            while  today >= start_date: 
-                download_data(start_date,end_date,driver)
-                #update the start and end dates
-                start_date, end_date = update_dates(end_date)
-        # Close the browser after processing all the links
-        driver.quit()
+        while  today >= start_date: 
+            download_data(start_date,end_date,driver)
+            #update the start and end dates
+            start_date, end_date = update_dates(end_date)
+    # Close the browser after processing all the links
+    driver.quit()
 
 
 if __name__ =="__main__":
