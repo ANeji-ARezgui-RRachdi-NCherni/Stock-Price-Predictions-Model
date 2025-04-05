@@ -68,14 +68,14 @@ def download_data(start_date, end_date ,driver):
     end_picker.send_keys(end_date.strftime("%d/%m/%Y"))
     
     # pause to let the page update based on new dates
-    time.sleep(1)
+    time.sleep(2)
     
     # Locate and click the download button (adjust the selector as needed)
     download_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btnR ml10']")))
     download_button.click()
     
     # Wait for the download to complete (adjust the duration as necessary)
-    time.sleep(3)
+    time.sleep(4)
             
             
             
@@ -83,13 +83,13 @@ def main(date):
 
     chrome_options = Options()
     options = [
-    # "--headless",
+    "--headless",
     "--disable-gpu",
     "--window-size=1920,1200",
     "--ignore-certificate-errors",
     "--disable-extensions",
     "--no-sandbox",
-    "--no-first-run",
+    # "--no-first-run",
     "--disable-dev-shm-usage"
 ]
     for option in options:
