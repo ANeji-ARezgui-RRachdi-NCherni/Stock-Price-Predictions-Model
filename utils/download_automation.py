@@ -83,7 +83,7 @@ def main(date):
 
     chrome_options = Options()
     options = [
-    "--headless=new",
+    "--headless",
     "--disable-gpu",
     "--window-size=1920,1200",
     "--ignore-certificate-errors",
