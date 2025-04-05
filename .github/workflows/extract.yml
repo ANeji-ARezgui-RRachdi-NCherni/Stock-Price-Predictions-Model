@@ -41,22 +41,14 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     
-    - uses: browser-actions/setup-edge@v1
-    - name: Print Edge version
-      shell: pwsh
-      run: (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
-      
+    - name: Remove Chrome
+      run: sudo apt purge google-chrome-stable
 
-    - name: Install Edge WebDriver
-      run: |
-        wget https://msedgedriver.azureedge.net/134.0.3124.95/edgedriver_linux64.zip -O msedgedriver.zip
-        unzip msedgedriver.zip -d msedgedriver
-        chmod +x msedgedriver/msedgedriver
-        echo "WEB_DRIVER_PATH=$(pwd)/msedgedriver/msedgedriver" >> $GITHUB_ENV  
- 
-    
-    - name: get the downloads directory
-      run:  xdg-user-dir DOWNLOAD
+    - name: Remove default Chromium
+      run: sudo apt purge chromium-browser
+
+    - name: Install a new Chromium
+      run: sudo apt install -y chromium-browser
 
     - name: Download Data
       run: |
@@ -64,19 +56,10 @@ jobs:
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           python utils/download_automation.py --date 27/03/2025          
-          cd "data" || echo "No Downloads directory found."
           ls -a || echo "No csv files found."
           find . -type f -iname "*.csv"
 
-          
-    # - name: Data transformation
-    #   run: |
-    #     source $HOME/miniconda/bin/activate
-    #     conda activate Stock_Price_Prediction 
-        
-
-    # - name: Load the CSV files to azure storage
-    #   run: dvc push 
+      
   
     
 

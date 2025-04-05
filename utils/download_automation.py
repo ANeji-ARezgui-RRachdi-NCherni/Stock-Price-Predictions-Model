@@ -1,17 +1,16 @@
 from selenium import webdriver
-from selenium.webdriver.edge.service import Service
-from selenium.webdriver.edge.options import Options 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-import os
 from dotenv import load_dotenv
 import argparse
-import tempfile
-
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.os_manager import ChromeType 
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service as ChromiumService
 
 
 load_dotenv()
@@ -80,56 +79,45 @@ def download_data(start_date, end_date ,driver):
             
             
 def main(date):
-    #download directory
-    download_dir = os.path.join(os.getcwd(), "data") 
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
 
-    # Set up Edge options and add the unique user data directory
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
+    # Set up options
+    chrome_options = Options()
+    options = [
+    "--headless",
+    "--disable-gpu",
+    "--window-size=1920,1200",
+    "--ignore-certificate-errors",
+    "--disable-extensions",
+    "--no-sandbox",
+    "--disable-dev-shm-usage"
+]
+    for option in options:
+        chrome_options.add_argument(option)
     
 
-    # Set preferences for downloads (if supported by the driver)
-    options.add_experimental_option("prefs", {
-        "download.default_directory":  download_dir,
-        "download.prompt_for_download": False,
-        "download.directory_upgrade": True
-    })
+    # Set up Driver
+    driver = webdriver.Chrome(service=ChromiumService(
+        ChromeDriverManager(
+            driver_version= "135.0.7049.42",
+            chrome_type=ChromeType.CHROMIUM).install()))
+    # Stock Symbols
+    links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
+    "CELL","CC","BTE","BIAT","BHL","BH","BHASS","BL","BNA","BT","TJARI","TJL","AST",
+    "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
 
-    with tempfile.TemporaryDirectory() as user_data_dir:
-        options.add_argument(f'--user-data-dir={user_data_dir}')
-        # browser webdriver
-        edgedriver_path =os.getenv('WEB_DRIVER_PATH')
-        if not edgedriver_path:
-            raise EnvironmentError("WEB_DRIVER_PATH not set!")
+    today=datetime.today().date()
 
-        # Set up EdgeDriver
-        service = Service(executable_path=edgedriver_path)
-        driver = webdriver.Edge(options=options, service=service)
+    for link in links:
 
-        # Stock Symbols
-        links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
-        "CELL","CC","BTE","BIAT","BHL","BH","BHASS","BL","BNA","BT","TJARI","TJL","AST",
-        "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
+        start_date, end_date= get_dates(date)
+        driver.get(LINK+link)
 
-        today=datetime.today().date()
-        # abs_download_dir = os.path.join(os.getcwd(), "downloads")
-
-
-        for link in links:
-
-            start_date, end_date= get_dates(date)
-            driver.get(LINK+link)
-
-            while  today >= start_date: 
-                download_data(start_date,end_date,driver)
-                #update the start and end dates
-                start_date, end_date = update_dates(end_date)
-        # Close the browser after processing all the links
-        driver.quit()
+        while  today >= start_date: 
+            download_data(start_date,end_date,driver)
+            #update the start and end dates
+            start_date, end_date = update_dates(end_date)
+    # Close the browser after processing all the links
+    driver.quit()
 
 
 if __name__ =="__main__":
