@@ -50,6 +50,9 @@ jobs:
     - name: Install a new Chromium
       run: sudo apt install -y chromium-browser
 
+    - name: Install Chrome Dependencies
+      run: sudo apt install -y libxss1 libappindicator3-1 libindicator7  
+
     - name: Download Data
       run: |
           current_date=$(date +'%d/%m/%Y')
