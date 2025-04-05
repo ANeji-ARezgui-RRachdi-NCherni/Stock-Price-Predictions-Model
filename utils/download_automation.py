@@ -94,8 +94,8 @@ def main(date):
     for option in options:
         chrome_options.add_argument(option)
 
-    # with tempfile.TemporaryDirectory() as user_data_dir:
-    #     chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
+    with tempfile.TemporaryDirectory() as user_data_dir:
+        chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
 
         # Set up Driver
     driver = webdriver.Chrome(service=ChromiumService(
