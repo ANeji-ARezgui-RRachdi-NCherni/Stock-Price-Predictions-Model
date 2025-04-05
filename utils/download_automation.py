@@ -101,6 +101,7 @@ def main(date):
 
     chrome_options.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
+        "savefile.default_directory": download_dir,
         "download.prompt_for_download": False,
         "download.directory_upgrade": True
     })
