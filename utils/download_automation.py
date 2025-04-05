@@ -7,6 +7,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from dotenv import load_dotenv
 import argparse
+import os
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType 
 from selenium.webdriver.chrome.options import Options
@@ -93,6 +94,17 @@ def main(date):
 ]
     for option in options:
         chrome_options.add_argument(option)
+    
+    download_dir = os.path.join(os.getcwd(), "data")
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+
+    chrome_options.add_experimental_option("prefs", {
+        "download.default_directory": download_dir,
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True
+    })
+
     # Set up Driver
     service=ChromiumService(ChromeDriverManager(driver_version="134.0.6998.0", chrome_type=ChromeType.CHROMIUM).install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
