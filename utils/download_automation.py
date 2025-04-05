@@ -7,8 +7,6 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from dotenv import load_dotenv
 import argparse
-import os
-import uuid
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType 
 from selenium.webdriver.chrome.options import Options
@@ -84,7 +82,7 @@ def main(date):
 
     chrome_options = Options()
     options = [
-    "--headless",
+    "--headless=new",
     "--disable-gpu",
     "--window-size=1920,1200",
     "--ignore-certificate-errors",
@@ -95,14 +93,9 @@ def main(date):
 ]
     for option in options:
         chrome_options.add_argument(option)
-
-    unique_profile_dir = f"/tmp/chrome-profile-{uuid.uuid4()}"
-    os.makedirs(unique_profile_dir, exist_ok=True)
-    chrome_options.add_argument(f'--user-data-dir={unique_profile_dir}')
     # Set up Driver
-    driver = webdriver.Chrome(service=ChromiumService(
-            ChromeDriverManager(
-            chrome_type=ChromeType.CHROMIUM).install()))
+    service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     # Stock Symbols
     links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
     "CELL","CC","BTE","BIAT","BHL","BH","BHASS","BL","BNA","BT","TJARI","TJL","AST",
