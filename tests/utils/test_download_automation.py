@@ -1,70 +1,98 @@
 import pytest
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from selenium import webdriver
-from selenium.webdriver.edge.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-import sys
+from datetime import datetime, timedelta
+from unittest import mock
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(os.getcwd()+'../..')))
 
-from utils import get_dates, update_dates, download_data
+import utils.download_automation as download_automation
 
+
+# -------------- Fixtures ----------------
+@pytest.fixture
+def today_date():
+    return datetime.today().date()
 
 @pytest.fixture
-def date():
-    return datetime.strptime("01/02/2013", "%d/%m/%Y").date()  
+def session_mock():
+    return mock.Mock()
 
 @pytest.fixture
-def dates():
-    start=datetime.strptime("01/02/2013", "%d/%m/%Y").date()
-    end=datetime.strptime("01/03/2013", "%d/%m/%Y").date()
-    return  start, end 
+def dummy_response():
+    mock_resp = mock.Mock()
+    mock_resp.status_code = 200
+    mock_resp.content = b"symbole;date;ouverture;haut;bas;cloture;volume\r\nSYM1;01-01-2024;100;110;90;105;1000"
+    return mock_resp
 
-@pytest.fixture
-def link():
-    return "https://www.ilboursa.com/marches/download/HL"
+# -------------- Tests for get_dates ----------------
+class TestGetDates:
 
-@pytest.fixture
-def driver():
-    edgedriver_path =os.getenv('WEB_DRIVER_PATH')
-    service = Service(executable_path=edgedriver_path)
-    drv = webdriver.Edge(service=service)
-    return drv
+    def test_get_dates_today(self, today_date):
+        """Test when start date is today's date."""
+        start_str = today_date.strftime("%d-%m-%Y")
+        start, end = download_automation.get_dates(start_str)
+        assert start == today_date
+        assert end == today_date
 
-@pytest.fixture
-def new_file():
+    @pytest.mark.parametrize("input_date", ["01-01-2024", "15-08-2023"])
+    def test_get_dates_past_dates(self, input_date):
+        """Test normal case with past dates."""
+        expected_start = datetime.strptime(input_date, "%d-%m-%Y").date()
+        expected_end = expected_start + timedelta(days=83)
+        start, end = download_automation.get_dates(input_date)
+        assert start == expected_start
+        assert end == expected_end
+
+# -------------- Tests for update_dates ----------------
+class TestUpdateDates:
+
+    def test_update_dates_normal(self):
+        """Test that update_dates shifts by +1 and +84 days."""
+        original_date = datetime(2024, 1, 1).date()
+        start, end = download_automation.update_dates(original_date)
+        assert start == original_date + timedelta(days=1)
+        assert end == original_date + timedelta(days=84)
+
+# -------------- Tests for download_data ----------------
+class TestDownloadData:
     
-    download_folder = "C:/Users/rezgu/Downloads"
-    initial_files = set(os.listdir(download_folder))
-    current_files = set(os.listdir(download_folder))
-    return current_files - initial_files
+    @mock.patch("builtins.open", new_callable=mock.mock_open)
+    @mock.patch("os.makedirs")
+    @mock.patch("os.path.exists", return_value=False)
+    @mock.patch("os.stat")  # <--- Mock os.stat too
+    def test_download_successful(self, mock_stat, mock_exists, mock_makedirs, mock_open_file, session_mock, dummy_response):
+        """Test successful download and file creation."""
+        session_mock.post.return_value = dummy_response
+        # Mock st_size attribute to simulate empty file (size 0)
+        mock_stat.return_value.st_size = 0
 
-def test_update_dates_raises():
-   with pytest.raises(TypeError):
-       update_dates("01/02/2013")
+        download_automation.download_data(
+            "2024-01-01",
+            "2024-03-24",
+            cookies={},
+            token="dummy_token",
+            session=session_mock,
+            link="https://www.ilboursa.com/marches/download/DUMMY",
+            fileName="DUMMY.csv"
+        )
 
-def test_update_dates(date):
-    start_date,end_date=update_dates(date)
-    assert start_date == date + relativedelta(days=1)
-    assert end_date == date + relativedelta(days=90)         
+    @mock.patch("os.makedirs")
+    @mock.patch("os.path.exists", return_value=True)
+    def test_download_failure(self, mock_exists, mock_makedirs, session_mock):
+        """Test failed download raises Exception."""
+        failed_response = mock.Mock()
+        failed_response.status_code = 500
+        session_mock.post.return_value = failed_response
 
-def test_get_dates_raises(date):
-    with pytest.raises(TypeError):
-       get_dates(date)
-
-
-
-def test_get_dates(date):
-    start_date,end_date=get_dates("01/02/2013")
-    assert start_date == date
-    assert end_date == date + relativedelta(days=89)    
-
-
-@pytest.mark.skip
-def test_download_data(dates,driver,link):
-    driver.get(link)
-    download_data(dates[0],dates[1],driver)
-    assert new_file
+        with pytest.raises(Exception, match="❌ Failed to download file. Status code: 500"):
+            download_automation.download_data(
+                "2024-01-01",
+                "2024-03-24",
+                cookies={},
+                token="dummy_token",
+                session=session_mock,
+                link="https://www.ilboursa.com/marches/download/DUMMY",
+                fileName="DUMMY.csv"
+            )
 

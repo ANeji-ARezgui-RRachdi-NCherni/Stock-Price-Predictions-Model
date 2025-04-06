@@ -1,4 +1,4 @@
-name: Data Extraction Pipeline 2
+name: ETL Pipeline
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  extract-data:
+  ETL:
     runs-on: ubuntu-20.04
 
     steps:
@@ -39,12 +39,14 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-    - name: Download Data
+    - name: Extract Data
       run: |
           current_date=$(date +'%d/%m/%Y')
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
-          python utils/download_automation_2.py
+          python utils/download_automation_2.py --date $current_date
+          cd data/raw
+          ls
     
     
     
