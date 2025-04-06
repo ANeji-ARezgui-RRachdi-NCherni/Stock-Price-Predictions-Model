@@ -4,7 +4,7 @@ import argparse
 import requests
 from bs4 import BeautifulSoup
 import os
-from constants import RAW_DATA_DOWNLOAD_BASELINK, HEADERS, SYMBOLS
+from utils import RAW_DATA_DOWNLOAD_BASELINK, HEADERS, SYMBOLS
 
 def get_dates(start):
     """
