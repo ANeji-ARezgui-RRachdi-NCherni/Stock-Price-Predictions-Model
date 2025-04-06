@@ -6,11 +6,11 @@ import pytest
 import matplotlib.pyplot as plt
 
 # we need to change directory to import modules
-import sys
-sys.path.append('../')
+import sys,os
+from pathlib import Path
+sys.path.insert(0, str(Path(os.getcwd()) / '..' / '..'))
 from src.prediction_model.models.IModel import IModel
-from utils.train_test_utils import split_dataset, get_target_from_dataset, get_features_from_dataset, train, evaluate, plot_evaluation_result
-sys.path.append('/tests')
+from utils import split_dataset, get_target_from_dataset, get_features_from_dataset, train, evaluate, plot_evaluation_result
 
 def test_split_dataset():
     data = pd.DataFrame({"col1": range(10)})

@@ -4,10 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # we need to change directory to import IModel interface
-import sys
-sys.path.append('../')
+import sys,os
+from pathlib import Path
+sys.path.insert(0, str(Path(os.getcwd()) / '..'))
 from src.prediction_model.models.IModel import IModel
-sys.path.append('/utils')
 
 
 def split_dataset(dataset: pd.DataFrame, test_size: float = 0.2) -> tuple [pd.DataFrame, pd.DataFrame] :
