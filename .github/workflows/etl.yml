@@ -41,7 +41,7 @@ jobs:
       
     - name: Extract Data
       run: |
-          current_date=$(date +'%d/%m/%Y')
+          current_date=$(date +'%d-%m-%Y')
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           python utils/download_automation.py --date $current_date
