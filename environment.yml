@@ -8,7 +8,6 @@ dependencies:
   - matplotlib
   - pytest
   - pip
-  - python-dotenv
   - pip:
       - dvc[azure]
       - azure-cli
