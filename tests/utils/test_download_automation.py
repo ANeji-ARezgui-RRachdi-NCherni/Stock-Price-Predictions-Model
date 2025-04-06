@@ -4,7 +4,7 @@ from unittest import mock
 import os
 from pathlib import Path
 import sys
-sys.path.insert(0, str(Path(os.getcwd() / '..'/ '..')))
+sys.path.insert(0, str(Path(os.getcwd()) / '..'/ '..'))
 
 import utils.download_automation as download_automation
 
