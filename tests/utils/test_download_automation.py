@@ -6,8 +6,7 @@ from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(os.getcwd()) / '..'/ '..'))
 
-import utils.download_automation as download_automation
-
+from utils import get_dates, update_dates, download_data
 
 # -------------- Fixtures ----------------
 @pytest.fixture
@@ -31,7 +30,7 @@ class TestGetDates:
     def test_get_dates_today(self, today_date):
         """Test when start date is today's date."""
         start_str = today_date.strftime("%d-%m-%Y")
-        start, end = download_automation.get_dates(start_str)
+        start, end = get_dates(start_str)
         assert start == today_date
         assert end == today_date
 
@@ -40,7 +39,7 @@ class TestGetDates:
         """Test normal case with past dates."""
         expected_start = datetime.strptime(input_date, "%d-%m-%Y").date()
         expected_end = expected_start + timedelta(days=83)
-        start, end = download_automation.get_dates(input_date)
+        start, end = get_dates(input_date)
         assert start == expected_start
         assert end == expected_end
 
@@ -50,7 +49,7 @@ class TestUpdateDates:
     def test_update_dates_normal(self):
         """Test that update_dates shifts by +1 and +84 days."""
         original_date = datetime(2024, 1, 1).date()
-        start, end = download_automation.update_dates(original_date)
+        start, end = update_dates(original_date)
         assert start == original_date + timedelta(days=1)
         assert end == original_date + timedelta(days=84)
 
@@ -67,7 +66,7 @@ class TestDownloadData:
         # Mock st_size attribute to simulate empty file (size 0)
         mock_stat.return_value.st_size = 0
 
-        download_automation.download_data(
+        download_data(
             "2024-01-01",
             "2024-03-24",
             cookies={},
@@ -86,7 +85,7 @@ class TestDownloadData:
         session_mock.post.return_value = failed_response
 
         with pytest.raises(Exception, match="❌ Failed to download file. Status code: 500"):
-            download_automation.download_data(
+            download_data(
                 "2024-01-01",
                 "2024-03-24",
                 cookies={},
