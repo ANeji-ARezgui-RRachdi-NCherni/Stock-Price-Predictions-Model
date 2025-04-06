@@ -4,7 +4,7 @@ import argparse
 import requests
 from bs4 import BeautifulSoup
 import os
-from constants import RAW_DATA_DOWNLOAD_BASELINK, HEADERS
+from constants import RAW_DATA_DOWNLOAD_BASELINK, HEADERS, SYMBOLS
 
 def get_dates(start):
     """
@@ -82,14 +82,9 @@ def download_data(start_date, end_date ,cookies, token, session, link, fileName)
         raise Exception(f"❌ Failed to download file. Status code: {response_post.status_code}")
             
 def main(date):
-    # Stock Symbols
-    links= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","CIL","CREAL",
-    "CELL","CC","BTE","BIAT","BHL","BH","BHASS","BL","BNA","BT","TJARI","TJL","AST",
-    "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
-
     today=datetime.today().date()
 
-    for link in links:
+    for symbol in SYMBOLS:
 
         start_date, end_date= get_dates(date)
 
@@ -97,7 +92,7 @@ def main(date):
         session = requests.Session()
 
         # First GET request to load page and retrieve token + cookies
-        url_get = f'{RAW_DATA_DOWNLOAD_BASELINK}{link}'
+        url_get = f'{RAW_DATA_DOWNLOAD_BASELINK}{symbol}'
         response_get = session.get(url_get)
 
         # Parse the __RequestVerificationToken from the HTML
@@ -109,7 +104,7 @@ def main(date):
 
         cookies = session.cookies.get_dict()
 
-        fileName = f'{link}.csv'
+        fileName = f'{symbol}.csv'
 
         while  today >= start_date:
             download_data(start_date,end_date,cookies,token,session,url_get,fileName)
