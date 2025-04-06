@@ -44,7 +44,7 @@ jobs:
           current_date=$(date +'%d/%m/%Y')
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
-          python utils/download_automation_2.py --date $current_date
+          python utils/download_automation.py --date $current_date
           cd data/raw
           ls
     
