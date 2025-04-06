@@ -4,7 +4,7 @@ from unittest import mock
 import os
 from pathlib import Path
 import sys
-sys.path.insert(0, str(Path(os.getcwd()+'../..')))
+sys.path.insert(0, str(Path(os.getcwd() / '..'/ '..')))
 
 import utils.download_automation as download_automation
 
@@ -56,7 +56,7 @@ class TestUpdateDates:
 
 # -------------- Tests for download_data ----------------
 class TestDownloadData:
-    
+
     @mock.patch("builtins.open", new_callable=mock.mock_open)
     @mock.patch("os.makedirs")
     @mock.patch("os.path.exists", return_value=False)
