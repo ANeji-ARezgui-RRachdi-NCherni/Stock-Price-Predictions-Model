@@ -1,11 +1,6 @@
 name: ETL Pipeline
 
 on:
-  push:
-    branches:
-      - anas_neji/feat_data_extraction_2
-  schedule:
-    - cron: '0 0 * * *'  # runs every day at midnight (UTC)
   workflow_dispatch:
 
 jobs:
@@ -44,9 +39,7 @@ jobs:
           current_date=$(date +'%d-%m-%Y')
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
-          python utils/download_automation.py --date 01-01-2024
-          cd data/raw
-          ls -la
+          python utils/download_automation.py --date $current_date
     
     
     
