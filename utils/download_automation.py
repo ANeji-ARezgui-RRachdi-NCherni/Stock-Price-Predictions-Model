@@ -4,10 +4,7 @@ import argparse
 import requests
 from bs4 import BeautifulSoup
 import os
-
-#constants
-BASELINK =  "https://www.ilboursa.com/marches/download/"
-EXPECTED_HEADERS = "symbole;date;ouverture;haut;bas;cloture;volume"
+from constants import RAW_DATA_DOWNLOAD_BASELINK, HEADERS
 
 def get_dates(start):
     """
@@ -57,7 +54,7 @@ def download_data(start_date, end_date ,cookies, token, session, link, fileName)
     }
 
     # Prepare headers to mimic a real browser
-    headers = {
+    post_headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Origin": "https://www.ilboursa.com",
         "Referer": link,
@@ -65,18 +62,18 @@ def download_data(start_date, end_date ,cookies, token, session, link, fileName)
     }
 
     # Make POST request with data + headers + EXPLICIT cookies
-    response_post = session.post(link, data=data, headers=headers, cookies=cookies)
+    response_post = session.post(link, data=data, headers=post_headers, cookies=cookies)
 
     file_path = f"data/raw/{fileName}"
     if response_post.status_code == 200:
         if not os.path.exists("data/raw"):
             os.makedirs("data/raw")
         response_post_content_to_array = response_post.content.decode().split('\r\n')
-        if response_post_content_to_array[0] == EXPECTED_HEADERS: ## Ugly hack to check if the content is indeed a csv file (if there are no data the api call returns an html file)
+        if response_post_content_to_array[0] == HEADERS: ## Ugly hack to check if the content is indeed a csv file (if there are no data the api call returns an html file)
             with open(file_path, 'a') as f:
                 if os.stat(file_path).st_size == 0:
                     print(f"{file_path} created successfully")
-                    f.write(f'{EXPECTED_HEADERS}\n')
+                    f.write(f'{HEADERS}\n')
                 for i in range(1,len(response_post_content_to_array)): ## We skip first line because it's the headers
                     line = response_post_content_to_array[i]
                     if line != '':
@@ -100,7 +97,7 @@ def main(date):
         session = requests.Session()
 
         # First GET request to load page and retrieve token + cookies
-        url_get = f'{BASELINK}{link}'
+        url_get = f'{RAW_DATA_DOWNLOAD_BASELINK}{link}'
         response_get = session.get(url_get)
 
         # Parse the __RequestVerificationToken from the HTML
