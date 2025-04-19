@@ -1,6 +1,6 @@
 name: Stock_Price_Prediction
 dependencies:
-  - python=3.10.0
+  - python=3.11.0
   - pandas
   - numpy
   - scikit-learn
