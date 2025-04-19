@@ -11,4 +11,3 @@ dependencies:
   - pip
   - pip:
       - dvc[azure]
-      - azure-cli
