@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import sys,os
 from pathlib import Path
 sys.path.insert(0, str(Path(os.getcwd()) / '..'))
-from src.prediction_model.models.IModel import IModel
+from src import IModel
 
 
 def split_dataset(dataset: pd.DataFrame, test_size: float = 0.2) -> tuple [pd.DataFrame, pd.DataFrame] :

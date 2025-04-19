@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import sys,os
 from pathlib import Path
 sys.path.insert(0, str(Path(os.getcwd()) / '..' / '..'))
-from src.prediction_model.models.IModel import IModel
+from src import IModel
 from utils import split_dataset, get_target_from_dataset, get_features_from_dataset, train, evaluate, plot_evaluation_result
 
 def test_split_dataset():
