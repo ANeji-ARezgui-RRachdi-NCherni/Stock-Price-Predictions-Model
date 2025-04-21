@@ -9,4 +9,6 @@ dependencies:
   - pytest
   - pip
   - pip:
+      - valkey
+      - "valkey[hiredis]"
       - dvc[azure]
