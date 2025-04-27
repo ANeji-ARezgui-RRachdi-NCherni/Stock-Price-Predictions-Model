@@ -135,7 +135,7 @@ class TestProcessAllRawFiles:
         raw_dir, processed_dir = temp_data_dirs
         
         # Mock the project root to point to our temp directory
-        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent.parent):
             process_all_raw_files()
         
         # Check output file was created
@@ -163,7 +163,7 @@ class TestProcessAllRawFiles:
             f.write(test_data)
         
         # Mock the project root to point to our temp directory
-        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent.parent):
             process_all_raw_files()
         
         # Verify file wasn't modified (still has 2 rows)
@@ -183,7 +183,7 @@ class TestProcessAllRawFiles:
             f.write(test_data)
         
         # Mock the project root to point to our temp directory
-        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent.parent):
             process_all_raw_files()
         
         # Verify file was updated (now has 3 rows - original 1 + new 1 + interpolated 1)
@@ -195,7 +195,7 @@ class TestProcessAllRawFiles:
         raw_dir, processed_dir = temp_data_dirs
         
         # Mock the project root to point to our temp directory
-        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent.parent):
             process_all_raw_files()
         
         # No files should be created in processed dir
@@ -211,7 +211,7 @@ class TestProcessAllRawFiles:
             f.write("not;a;valid;csv;file")
         
         # Mock the project root to point to our temp directory
-        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent.parent):
             process_all_raw_files()
         
         # No output file should be created
@@ -226,7 +226,7 @@ class TestProcessAllRawFiles:
         assert not processed_dir.exists()
         
         # Mock the project root to point to our temp directory
-        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent.parent):
             process_all_raw_files()
         
         # Verify directory was created

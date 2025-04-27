@@ -11,6 +11,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+PROJECT_ROOT = Path(__file__).parent.parent
+
 def fill_missing_dates_interpolation(stock_df, date_col='date'):
     """
     Fill missing dates in stock history DataFrame with:
@@ -54,7 +56,7 @@ def process_all_raw_files():
     and save processed files to the processed data directory. Only appends new data if needed.
     """
     # Define paths relative to project root
-    project_root = Path(__file__).parent.parent
+    project_root = PROJECT_ROOT
     input_dir = project_root / 'data' / 'raw'
     output_dir = project_root / 'data' / 'processed'
     
