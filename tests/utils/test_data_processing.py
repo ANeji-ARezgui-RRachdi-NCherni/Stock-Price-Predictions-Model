@@ -99,11 +99,11 @@ class TestFillMissingDatesInterpolation:
         
         # Check values were properly converted
         assert result.loc[0, 'ouverture'] == pytest.approx(100.0)
-        assert result.loc[1, 'ouverture'] == pytest.approx(102.5)
+        assert result.loc[1, 'ouverture'] == pytest.approx(101.25)
+        assert result.loc[2, 'ouverture'] == pytest.approx(102.5)
         
         # Check interpolation worked (average of 100.0 and 102.5)
         assert result.loc[1, 'date'].strftime('%d/%m/%Y') == '02/01/2023'
-        assert result.loc[1, 'ouverture'] == pytest.approx(101.25)  # Corrected expected value
     
     def test_missing_columns(self, sample_stock_data_missing_columns):
         """Test function with missing some OHLC columns"""
