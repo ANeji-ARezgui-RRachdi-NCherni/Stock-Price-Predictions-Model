@@ -41,14 +41,18 @@ jobs:
           conda activate Stock_Price_Prediction 
           python -m utils.download_automation --date $current_date
 
-    - name: Processing Data
+    - name: Transform data
       run: |
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction
           dvc pull
           python -m utils.process_stock_data
+
+    - name: Load data
+      run: |
+          source $HOME/miniconda/bin/activate
+          conda activate Stock_Price_Prediction
           dvc push
-    
     
     
 

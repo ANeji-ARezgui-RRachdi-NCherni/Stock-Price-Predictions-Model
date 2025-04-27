@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from pathlib import Path
 import logging
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(
@@ -13,8 +14,7 @@ logger = logging.getLogger(__name__)
 def fill_missing_dates_interpolation(stock_df, date_col='date'):
     """
     Fill missing dates in stock history DataFrame with:
-    - ouverture, haut, bas, cloture = interpolated values (numeric)
-    - volume = 0 (only for missing dates)
+    - ouverture, haut, bas, cloture, volume = interpolated values (numeric)
     Without altering existing non-null values.
     """
     try:
@@ -51,10 +51,10 @@ def fill_missing_dates_interpolation(stock_df, date_col='date'):
 def process_all_raw_files():
     """
     Process all CSV files in the raw data directory, applying the fill_missing_dates_interpolation function,
-    and save processed files to the processed data directory.
+    and save processed files to the processed data directory. Only appends new data if needed.
     """
     # Define paths relative to project root
-    project_root = Path(__file__).parent.parent  # Assumes script is in stock-price-predictions/utils/
+    project_root = Path(__file__).parent.parent
     input_dir = project_root / 'data' / 'raw'
     output_dir = project_root / 'data' / 'processed'
     
@@ -84,11 +84,45 @@ def process_all_raw_files():
             
             # Drop the 'symbole' column if it exists
             if 'symbole' in raw_df.columns:
-                raw_df = raw_df.drop(columns=['symbole'])  # <-- THIS IS THE ADDED LINE
+                raw_df = raw_df.drop(columns=['symbole'])
                 logger.debug(f"Dropped 'symbole' column from {file_name}")
             
-            # Apply processing function
-            processed_df = fill_missing_dates_interpolation(raw_df)
+            # Convert date column to datetime for comparison
+            raw_df['date'] = pd.to_datetime(raw_df['date'], format='%d/%m/%Y', dayfirst=True)
+            
+            # Check if processed file exists
+            if os.path.exists(output_path):
+                # Read existing processed file
+                processed_df = pd.read_csv(output_path, sep=';')
+                processed_df['date'] = pd.to_datetime(processed_df['date'], format='%Y-%m-%d', dayfirst=True)
+                
+                # Get last dates from both files
+                last_processed_date = processed_df['date'].max()
+                last_raw_date = raw_df['date'].max()
+                
+                if last_raw_date <= last_processed_date:
+                    logger.info(f"No new data in {file_name}, skipping update")
+                    success_count += 1
+                    continue
+                
+                # Find new rows (dates after last processed date)
+                new_rows = raw_df[raw_df['date'] > last_processed_date].copy()
+                
+                if not new_rows.empty:
+                    logger.info(f"Found {len(new_rows)} new rows to append")
+                    
+                    # Combine old processed data with new rows
+                    combined_df = pd.concat([processed_df, new_rows], ignore_index=True)
+                    
+                    # Apply interpolation on the combined dataframe
+                    processed_df = fill_missing_dates_interpolation(combined_df)
+                else:
+                    logger.info("No new rows found despite date difference, skipping update")
+                    success_count += 1
+                    continue
+            else:
+                # No existing file, process entire raw file
+                processed_df = fill_missing_dates_interpolation(raw_df)
             
             # Save processed data
             processed_df.to_csv(output_path, index=False, sep=';')
