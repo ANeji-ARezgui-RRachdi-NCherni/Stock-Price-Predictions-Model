@@ -17,28 +17,36 @@ def fill_missing_dates_interpolation(stock_df, date_col='date'):
     - volume = 0 (only for missing dates)
     Without altering existing non-null values.
     """
-    df = stock_df.copy()
+    try:
+        df = stock_df.copy()
 
-    df[date_col] = pd.to_datetime(df[date_col], format='%d/%m/%Y', dayfirst=True)
-    df = df.set_index(date_col).sort_index()
-    all_dates = pd.date_range(start=df.index.min(), end=df.index.max(), freq='D')
+        # Check if date column exists
+        if date_col not in df.columns:
+            raise ValueError(f"Required column '{date_col}' not found in DataFrame")
 
-    original_dates = df.index
-    df = df.reindex(all_dates)
-    is_new_row = ~df.index.isin(original_dates)
+        df[date_col] = pd.to_datetime(df[date_col], format='%d/%m/%Y', dayfirst=True)
+        df = df.set_index(date_col).sort_index()
+        all_dates = pd.date_range(start=df.index.min(), end=df.index.max(), freq='D')
 
-    # For OHLC columns, ensure numeric type before interpolation
-    ohlc_columns = ['ouverture', 'haut', 'bas', 'cloture','volume']
-    for col in ohlc_columns:
-        if col in df.columns:
-            # Convert to numeric, handling European decimal commas if needed
-            df[col] = pd.to_numeric(df[col].astype(str).str.replace(',', '.'), errors='coerce')
-            # Create temporary series with interpolated values
-            interpolated = df[col].interpolate(method='linear')
-            # Only update the new rows with interpolated values
-            df.loc[is_new_row, col] = interpolated.loc[is_new_row]
+        original_dates = df.index
+        df = df.reindex(all_dates)
+        is_new_row = ~df.index.isin(original_dates)
 
-    return df.reset_index().rename(columns={'index': date_col})
+        # For OHLC columns, ensure numeric type before interpolation
+        ohlc_columns = ['ouverture', 'haut', 'bas', 'cloture', 'volume']
+        for col in ohlc_columns:
+            if col in df.columns:
+                # Convert to numeric, handling European decimal commas if needed
+                df[col] = pd.to_numeric(df[col].astype(str).str.replace(',', '.'), errors='coerce')
+                # Create temporary series with interpolated values
+                interpolated = df[col].interpolate(method='linear')
+                # Only update the new rows with interpolated values
+                df.loc[is_new_row, col] = interpolated.loc[is_new_row]
+
+        return df.reset_index().rename(columns={'index': date_col})
+    
+    except Exception as e:
+        raise ValueError(f"Error processing DataFrame: {str(e)}") from e
 
 def process_all_raw_files():
     """
@@ -71,14 +79,19 @@ def process_all_raw_files():
             
             logger.info(f"Processing {file_name}...")
             
-            # Read raw data
-            raw_df = pd.read_csv(input_path)
+            # Read raw data with semicolon delimiter
+            raw_df = pd.read_csv(input_path, sep=';')
+            
+            # Drop the 'symbole' column if it exists
+            if 'symbole' in raw_df.columns:
+                raw_df = raw_df.drop(columns=['symbole'])  # <-- THIS IS THE ADDED LINE
+                logger.debug(f"Dropped 'symbole' column from {file_name}")
             
             # Apply processing function
             processed_df = fill_missing_dates_interpolation(raw_df)
             
             # Save processed data
-            processed_df.to_csv(output_path, index=False)
+            processed_df.to_csv(output_path, index=False, sep=';')
             logger.info(f"Successfully processed and saved to {output_path}")
             success_count += 1
             
