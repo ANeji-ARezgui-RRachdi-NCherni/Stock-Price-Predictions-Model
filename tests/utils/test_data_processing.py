@@ -6,6 +6,7 @@ import tempfile
 import shutil
 import os
 import sys
+from unittest.mock import patch
 
 # Add project root to Python path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -100,9 +101,9 @@ class TestFillMissingDatesInterpolation:
         assert result.loc[0, 'ouverture'] == pytest.approx(100.0)
         assert result.loc[1, 'ouverture'] == pytest.approx(102.5)
         
-        # Check interpolation worked
+        # Check interpolation worked (average of 100.0 and 102.5)
         assert result.loc[1, 'date'].strftime('%d/%m/%Y') == '02/01/2023'
-        assert result.loc[1, 'ouverture'] == pytest.approx(101.25)
+        assert result.loc[1, 'ouverture'] == pytest.approx(101.25)  # Corrected expected value
     
     def test_missing_columns(self, sample_stock_data_missing_columns):
         """Test function with missing some OHLC columns"""
@@ -133,8 +134,9 @@ class TestProcessAllRawFiles:
         """Test processing a new file (no existing processed file)"""
         raw_dir, processed_dir = temp_data_dirs
         
-        # Process the file
-        process_all_raw_files()
+        # Mock the project root to point to our temp directory
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+            process_all_raw_files()
         
         # Check output file was created
         output_file = processed_dir / 'test_stock.csv'
@@ -160,8 +162,9 @@ class TestProcessAllRawFiles:
         with open(output_file, 'w') as f:
             f.write(test_data)
         
-        # Process - should detect no updates needed
-        process_all_raw_files()
+        # Mock the project root to point to our temp directory
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+            process_all_raw_files()
         
         # Verify file wasn't modified (still has 2 rows)
         result = pd.read_csv(output_file, sep=';')
@@ -179,8 +182,9 @@ class TestProcessAllRawFiles:
         with open(output_file, 'w') as f:
             f.write(test_data)
         
-        # Process - should detect new data and update
-        process_all_raw_files()
+        # Mock the project root to point to our temp directory
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+            process_all_raw_files()
         
         # Verify file was updated (now has 3 rows - original 1 + new 1 + interpolated 1)
         result = pd.read_csv(output_file, sep=';')
@@ -190,8 +194,9 @@ class TestProcessAllRawFiles:
         """Test when no raw files exist"""
         raw_dir, processed_dir = temp_data_dirs
         
-        # Should log warning but not fail
-        process_all_raw_files()
+        # Mock the project root to point to our temp directory
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+            process_all_raw_files()
         
         # No files should be created in processed dir
         assert len(list(processed_dir.glob('*.csv'))) == 0
@@ -205,8 +210,9 @@ class TestProcessAllRawFiles:
         with open(invalid_file, 'w') as f:
             f.write("not;a;valid;csv;file")
         
-        # Should log error but continue processing
-        process_all_raw_files()
+        # Mock the project root to point to our temp directory
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+            process_all_raw_files()
         
         # No output file should be created
         assert not (processed_dir / 'invalid.csv').exists()
@@ -219,8 +225,9 @@ class TestProcessAllRawFiles:
         shutil.rmtree(processed_dir)
         assert not processed_dir.exists()
         
-        # Process files - should create the directory
-        process_all_raw_files()
+        # Mock the project root to point to our temp directory
+        with patch('utils.process_stock_data.PROJECT_ROOT', Path(temp_data_dirs[0]).parent):
+            process_all_raw_files()
         
         # Verify directory was created
         assert processed_dir.exists()
