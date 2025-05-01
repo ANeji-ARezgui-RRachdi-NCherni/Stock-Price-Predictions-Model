@@ -43,7 +43,7 @@ jobs:
           echo "Checking if any CSVs were created..."
           if ls data/raw/*.csv 1> /dev/null 2>&1; then
             dvc add data/raw/*.csv
-            git config --global user.email "you@example.com"
+            git config --global user.email "action@github.com"
             git config --global user.name "GitHub Actions"
             git add data/raw/*.dvc .dvc/.gitignore
             git commit -m "Add raw data for $current_date"
@@ -58,6 +58,8 @@ jobs:
           dvc pull
           python -m utils.process_stock_data
           dvc add data/processed/*.csv
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Actions"
           git add data/processed/*.dvc .dvc/.gitignore
           git commit -m "Update processed data for $current_date"
 
