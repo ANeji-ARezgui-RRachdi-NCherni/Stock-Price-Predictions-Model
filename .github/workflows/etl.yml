@@ -3,6 +3,9 @@ name: ETL Pipeline
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   ETL:
     runs-on: ubuntu-24.04
@@ -47,7 +50,7 @@ jobs:
             git config --global user.name "GitHub Actions"
             git add data/raw/*.dvc .dvc/.gitignore
             git commit -m "Add raw data for $current_date"
-            git push origin HEAD
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD
           else
             echo "No CSV files found in data/raw/. Skipping DVC add."
           fi
@@ -63,7 +66,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add data/processed/*.dvc .dvc/.gitignore
           git commit -m "Update processed data for $current_date"
-          git push origin HEAD
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD
 
     - name: Load data
       run: |
