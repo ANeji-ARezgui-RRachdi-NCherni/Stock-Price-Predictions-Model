@@ -1,0 +1,5 @@
+outs:
+- md5: f9be11c995ea444da4e8c6ca4ab099cc
+  size: 145078
+  hash: md5
+  path: AMS.csv

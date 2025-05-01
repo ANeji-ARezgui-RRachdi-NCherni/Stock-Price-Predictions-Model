@@ -1,0 +1,5 @@
+outs:
+- md5: 9a24fdfe579551b7e121727fab38fbcb
+  size: 151505
+  hash: md5
+  path: BNA.csv
