@@ -40,6 +40,11 @@ jobs:
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           python -m utils.download_automation --date $current_date
+          dvc add data/raw/*.csv
+          git config --global user.email "you@example.com"
+          git config --global user.name "GitHub Actions"
+          git add data/raw/*.dvc .dvc/.gitignore
+          git commit -m "Add raw data for $current_date"
 
     - name: Transform data
       run: |
@@ -47,13 +52,12 @@ jobs:
           conda activate Stock_Price_Prediction
           dvc pull
           python -m utils.process_stock_data
+          dvc add data/processed/*.csv
+          git add data/processed/*.dvc .dvc/.gitignore
+          git commit -m "Update processed data for $current_date"
 
     - name: Load data
       run: |
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction
           dvc push
-    
-    
-
- 
