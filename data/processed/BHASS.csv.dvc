@@ -1,0 +1,5 @@
+outs:
+- md5: 4b8ced5e04f8fd44f1f6341be6c251fd
+  size: 340160
+  hash: md5
+  path: BHASS.csv
