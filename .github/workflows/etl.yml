@@ -56,10 +56,10 @@ jobs:
       
     - name: Extract Data
       run: |
-          current_date=$CURRENT_DATE
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
-          python -m utils.download_automation --date $current_date
+          dvc pull
+          python -m utils.download_automation --date $CURRENT_DATE
           echo "Checking if any CSVs were created..."
           if ls data/raw/*.csv 1> /dev/null 2>&1; then
             dvc add data/raw/*.csv
