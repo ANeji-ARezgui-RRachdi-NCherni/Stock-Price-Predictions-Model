@@ -78,7 +78,7 @@ jobs:
           if ls data/processed/*.csv 1> /dev/null 2>&1; then
             dvc add data/processed/*.csv
             git add data/processed/*.dvc .dvc/.gitignore
-            git commit -m "Update processed data for $CURRENT_DATE"
+            git commit -m "Update processed data for $CURRENT_DATE" || echo "No changes to commit"
           else
             echo "No CSV files found in data/processed/. Skipping DVC add."
           fi
