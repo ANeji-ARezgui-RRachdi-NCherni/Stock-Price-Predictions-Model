@@ -14,7 +14,8 @@ jobs:
       with:
         app_id: ${{ secrets.APP_ID }}
         private_key: ${{ secrets.APP_PRIVATE_KEY }}
-        installation_id: ${{ secrets.APP_INSTALLATION_ID }}
+        installation_retrieval_mode: repository
+        installation_retrieval_payload: ${{ github.repository }}
 
     - name: Checkout repository
       uses: actions/checkout@v3
