@@ -115,5 +115,10 @@ if __name__ =="__main__":
     parser = argparse.ArgumentParser(description="Download automation for stock data.")
     parser.add_argument("--date", required=True, help="Start date in dd-mm-YYYY format")
     args = parser.parse_args()
-    main(args.date)
+    if args.date.lower() == "all":
+        start_date_str = "01-01-2008"
+    else:
+        start_date_str = args.date
+
+    main(start_date_str)
 

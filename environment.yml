@@ -16,3 +16,4 @@ dependencies:
       - "valkey[hiredis]"
       - dvc[azure]
       - torch
+      - orjson
