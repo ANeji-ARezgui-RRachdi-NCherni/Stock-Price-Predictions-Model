@@ -8,8 +8,19 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+    - name: Generate GitHub App token
+      id: generate-token
+      uses: tibdex/github-app-token@v2
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_PRIVATE_KEY }}
+        installation_id: ${{ secrets.APP_INSTALLATION_ID }}
+
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ steps.generate-token.outputs.token }}
 
     - name: Set Up Python 3.11
       uses: actions/setup-python@v5
@@ -43,12 +54,10 @@ jobs:
           echo "Checking if any CSVs were created..."
           if ls data/raw/*.csv 1> /dev/null 2>&1; then
             dvc add data/raw/*.csv
-            git config --global user.email "action@github.com"
-            git config --global user.name "GitHub Actions"
-            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
+            git config --global user.email "stock-prices-bot@github.com"
+            git config --global user.name "Stock Prices Bot"
             git add data/raw/*.dvc .dvc/.gitignore
-            git commit -m "Add raw data for $current_date" || echo "No raw changes to commit"
-            git push origin HEAD:${{ github.ref_name }}
+            git commit -m "Add raw data for $current_date"
           else
             echo "No CSV files found in data/raw/. Skipping DVC add."
           fi
@@ -60,15 +69,18 @@ jobs:
           dvc pull
           python -m utils.process_stock_data
           dvc add data/processed/*.csv
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Actions"
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
+          git config --global user.email "stock-prices-bot@github.com"
+          git config --global user.name "Stock Prices Bot"
           git add data/processed/*.dvc .dvc/.gitignore
           git commit -m "Update processed data for $current_date" || echo "No processed changes to commit"
-          git push origin HEAD:${{ github.ref_name }}
 
     - name: Load data
       run: |
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction
           dvc push
+
+    - name: Push changes to repository
+      run: |
+          git remote set-url origin https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/${{ github.repository }}
+          git push origin ${GITHUB_REF#refs/heads/}
