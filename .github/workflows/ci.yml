@@ -5,6 +5,8 @@ on:
     branches:
       - master  # Trigger on PRs targeting the `master` branch
       - main    # Trigger on PRs targeting the `main` branch
+env:
+  KERAS_BACKEND: torch
 
 jobs:
   build-linux:
