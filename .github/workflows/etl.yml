@@ -45,8 +45,10 @@ jobs:
             dvc add data/raw/*.csv
             git config --global user.email "action@github.com"
             git config --global user.name "GitHub Actions"
+            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
             git add data/raw/*.dvc .dvc/.gitignore
-            git commit -m "Add raw data for $current_date"
+            git commit -m "Add raw data for $current_date" || echo "No raw changes to commit"
+            git push origin HEAD:${{ github.ref_name }}
           else
             echo "No CSV files found in data/raw/. Skipping DVC add."
           fi
@@ -60,8 +62,10 @@ jobs:
           dvc add data/processed/*.csv
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Actions"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
           git add data/processed/*.dvc .dvc/.gitignore
-          git commit -m "Update processed data for $current_date"
+          git commit -m "Update processed data for $current_date" || echo "No processed changes to commit"
+          git push origin HEAD:${{ github.ref_name }}
 
     - name: Load data
       run: |
