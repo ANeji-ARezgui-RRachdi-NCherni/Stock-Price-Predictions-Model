@@ -4,6 +4,9 @@ dependencies:
   - pandas
   - numpy
   - scikit-learn
+  - keras
+  - statsmodels
+  - pmdarima
   - jupyter
   - matplotlib
   - pytest
@@ -12,4 +15,5 @@ dependencies:
       - valkey
       - "valkey[hiredis]"
       - dvc[azure]
+      - torch
       - orjson
