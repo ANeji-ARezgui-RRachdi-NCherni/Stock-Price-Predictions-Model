@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
+from enums import ValidationMetricEnum
+from sklearn.preprocessing import MinMaxScaler
 
 class IModel(ABC):
     """
@@ -13,7 +15,8 @@ class IModel(ABC):
         Train the model using the provided data.
 
         Parameters:
-            data: The training data.
+            features: The training features.
+            targets: the training targets.
         """
         pass
 
@@ -30,8 +33,7 @@ class IModel(ABC):
         """
         pass
 
-    @abstractmethod
-    def evaluate(self, x_test: np.ndarray, y_test: np.ndarray, metric: str) -> float:
+    def evaluate(self, x_test: np.ndarray, y_test: np.ndarray, metric: ValidationMetricEnum, scale: float) -> float:
         """
         Evaluate the trained model.
 
@@ -39,8 +41,29 @@ class IModel(ABC):
             x_test: the rows we are trying to predict.
             y_test: the values we want to predcit.
             metric: evaluation metric
+            scale: the scale used to normalize the training and test data before training phase
 
         Returns:
             The evaluation result.
         """
-        pass
+        y_predict = self.predict(x_test)
+        print(f"test y dim before flattening:{y_test.shape}")
+        print(f"predict y dim before flattening:{y_predict.shape}")
+        if (y_predict.ndim > 1):
+            y_predict = y_predict.flatten()
+        if (y_test.ndim > 1):
+            y_test = y_test.flatten()
+        y_test = y_test
+        y_predict = y_predict * scale
+        y_test = y_test * scale
+        print(f"test y dim after flattening:{y_test.shape}")
+        print(f"predict y dim after flattening:{y_predict.shape}")
+        match metric:
+            case ValidationMetricEnum.RMSE:
+                rmse = np.sqrt(np.mean((y_predict - y_test)**2))
+                return rmse
+            case ValidationMetricEnum.MAPE:
+                mape = np.mean(abs(y_test - y_predict)/y_test)*100
+                return mape
+            case _:
+                raise NotImplementedError("This metric isn't implemented yet, if you want to use it please add its implementation")
