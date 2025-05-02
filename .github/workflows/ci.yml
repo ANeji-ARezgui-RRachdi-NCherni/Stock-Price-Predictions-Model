@@ -6,7 +6,7 @@ on:
       - master  # Trigger on PRs targeting the `master` branch
       - main    # Trigger on PRs targeting the `main` branch
 env:
-  KERAS_BACKEND: torch
+  KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
 
 jobs:
   build-linux:
