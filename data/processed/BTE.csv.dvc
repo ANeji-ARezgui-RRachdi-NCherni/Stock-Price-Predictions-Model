@@ -1,0 +1,5 @@
+outs:
+- md5: 39f3be5912189c3a9cd9a9bbc1d798b0
+  size: 307940
+  hash: md5
+  path: BTE.csv

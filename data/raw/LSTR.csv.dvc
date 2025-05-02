@@ -1,0 +1,5 @@
+outs:
+- md5: 5535b535996fe8052f00f7b951aab0b6
+  size: 155707
+  hash: md5
+  path: LSTR.csv

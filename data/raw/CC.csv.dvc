@@ -1,0 +1,5 @@
+outs:
+- md5: 978276664a2a8247dfcd2d373eec14ab
+  size: 153275
+  hash: md5
+  path: CC.csv

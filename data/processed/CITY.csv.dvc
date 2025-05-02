@@ -1,0 +1,5 @@
+outs:
+- md5: ccf5a7f7d1a91cd915b4867dba90030a
+  size: 297881
+  hash: md5
+  path: CITY.csv

@@ -12,3 +12,4 @@ dependencies:
       - valkey
       - "valkey[hiredis]"
       - dvc[azure]
+      - orjson

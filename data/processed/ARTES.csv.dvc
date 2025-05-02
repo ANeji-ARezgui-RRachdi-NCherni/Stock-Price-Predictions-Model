@@ -1,0 +1,5 @@
+outs:
+- md5: 24a4fc37c6a76f117a8a660e382c2d06
+  size: 325342
+  hash: md5
+  path: ARTES.csv
