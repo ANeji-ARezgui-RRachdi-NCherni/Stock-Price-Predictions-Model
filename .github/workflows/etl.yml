@@ -48,6 +48,11 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Configure Git for GitHub App
+      run: |
+        git config --global user.email "stock-prices-bot@github.com"
+        git config --global user.name "Stock Prices Bot"
       
     - name: Extract Data
       run: |
@@ -58,8 +63,6 @@ jobs:
           echo "Checking if any CSVs were created..."
           if ls data/raw/*.csv 1> /dev/null 2>&1; then
             dvc add data/raw/*.csv
-            git config --global user.email "stock-prices-bot@github.com"
-            git config --global user.name "Stock Prices Bot"
             git add data/raw/*.dvc .dvc/.gitignore
             git commit -m "Add raw data for $CURRENT_DATE"
           else
@@ -72,11 +75,13 @@ jobs:
           conda activate Stock_Price_Prediction
           dvc pull
           python -m utils.process_stock_data
-          dvc add data/processed/*.csv
-          git config --global user.email "stock-prices-bot@github.com"
-          git config --global user.name "Stock Prices Bot"
-          git add data/processed/*.dvc .dvc/.gitignore
-          git commit -m "Update processed data for $CURRENT_DATE" || echo "No processed changes to commit"
+          if ls data/processed/*.csv 1> /dev/null 2>&1; then
+            dvc add data/processed/*.csv
+            git add data/processed/*.dvc .dvc/.gitignore
+            git commit -m "Update processed data for $CURRENT_DATE"
+          else
+            echo "No CSV files found in data/processed/. Skipping DVC add."
+          fi
 
     - name: Load data
       run: |
