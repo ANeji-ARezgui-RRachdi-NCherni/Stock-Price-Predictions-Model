@@ -6,7 +6,7 @@ import plotly.express as px
 BACKEND_URL = "http://localhost:8000"  # Adjust if running from container or VM
 
 st.title("📈 Stock Price Viewer")
-
+companies = []
 # List companies from FastAPI
 try:
     companies = requests.get(f"{BACKEND_URL}/companies").json()
