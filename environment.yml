@@ -13,3 +13,9 @@ dependencies:
       - "valkey[hiredis]"
       - dvc[azure]
       - orjson
+      - fastapi==0.100.0
+      - pydantic>=1.10,<2.0
+      - uvicorn[standard]
+      - streamlit
+      - requests
+      - plotly
