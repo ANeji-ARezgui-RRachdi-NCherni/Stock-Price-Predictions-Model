@@ -17,3 +17,10 @@ dependencies:
       - dvc[azure]
       - torch
       - orjson
+      - fastapi==0.100.0
+      - pydantic==1.10.8
+      - uvicorn[standard]==0.22.0
+      - streamlit
+      - requests
+      - plotly
+      - python-dotenv
