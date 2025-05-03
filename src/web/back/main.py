@@ -33,12 +33,11 @@ def get_stock(company: str):
     try:
         csv_file = dvc_file.replace(".dvc", "")
         if not os.path.exists(csv_file):
-            subprocess.run(["dvc", "pull", dvc_file], check=True)
-
+            subprocess.run(["dvc", "pull", dvc_file], check=True, capture_output=True, text=True)
         df = pd.read_csv(csv_file, sep=";")
         return {"columns": df.columns.tolist(), "data": df.to_dict(orient="records")}
     except subprocess.CalledProcessError as e:
-        error_message = f"Failed to pull data with DVC. stdout: {e.stdout}, stderr: {e.stderr}"
+        error_message = f"Failed to pull data with DVC. stdout: {e.stdout.strip() if e.stdout else ''}, stderr: {e.stderr.strip() if e.stderr else ''}"
         raise HTTPException(status_code=500, detail=error_message)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
