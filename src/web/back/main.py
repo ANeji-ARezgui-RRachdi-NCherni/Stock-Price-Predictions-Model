@@ -37,7 +37,8 @@ def get_stock(company: str):
 
         df = pd.read_csv(csv_file, sep=";")
         return {"columns": df.columns.tolist(), "data": df.to_dict(orient="records")}
-    except subprocess.CalledProcessError:
-        raise HTTPException(status_code=500, detail="Failed to pull data with DVC")
+    except subprocess.CalledProcessError as e:
+        error_message = f"Failed to pull data with DVC. stdout: {e.stdout}, stderr: {e.stderr}"
+        raise HTTPException(status_code=500, detail=error_message)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
