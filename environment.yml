@@ -19,3 +19,4 @@ dependencies:
       - streamlit
       - requests
       - plotly
+      - python-dotenv
