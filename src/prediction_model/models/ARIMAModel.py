@@ -7,7 +7,7 @@ class ARIMAModel(IModel):
         pass
     
     def train(self, features, targets):
-        # for ARIMA model there isn't a seperation between features and targets so we pass all the data in the features param
+        # for ARIMA model there isn't a separation between features and targets so we pass all the data in the features param
         features = features.flatten()
         print(f"features shape: {features.shape}")
         model = ARIMA(features, order=(2,1,5)) # the order was found when running auto_arima method which generated the best orders
