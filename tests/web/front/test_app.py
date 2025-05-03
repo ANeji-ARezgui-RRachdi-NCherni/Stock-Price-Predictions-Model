@@ -1,9 +1,11 @@
+import os
 from unittest.mock import patch, MagicMock
 import pytest
 from streamlit.testing.v1 import AppTest
+
+@patch.dict(os.environ, {"BACKEND_URL": "http://localhost:8000"})
 @patch("src.web.front.app.requests.get")
 def test_chart_renders_with_data(mock_get):
-    from unittest.mock import MagicMock
 
     def side_effect(url, *args, **kwargs):
         mock_response = MagicMock()
