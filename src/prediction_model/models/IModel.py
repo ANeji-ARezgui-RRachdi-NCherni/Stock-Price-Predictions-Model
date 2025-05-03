@@ -39,7 +39,7 @@ class IModel(ABC):
 
         Parameters:
             x_test: the rows we are trying to predict.
-            y_test: the values we want to predcit.
+            y_test: the values we want to predict.
             metric: evaluation metric
             scale: the scale used to normalize the training and test data before training phase
 
