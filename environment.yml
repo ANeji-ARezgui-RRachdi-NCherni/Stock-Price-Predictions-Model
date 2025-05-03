@@ -12,3 +12,14 @@ dependencies:
       - valkey
       - "valkey[hiredis]"
       - dvc[azure]
+      - langchain
+      - langgraph
+      - langchain-community
+      - langchain-google-genai
+      - langchain-pinecone
+      - pinecone-notebooks
+      - pinecone-client
+      - streamlit
+      - torch
+      - chonkie
+      - markitdown
