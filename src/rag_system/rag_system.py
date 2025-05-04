@@ -8,9 +8,10 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import os
 from dotenv import load_dotenv
 from graph_nodes import *
+
 from pathlib import Path
 import sys
-sys.path.insert(0, str(Path(os.getcwd()) / '..'))
+sys.path.insert(0, str(Path(os.getcwd()) / '..' / '..'))
 from utils import get_pinecone_vector_store
 
 load_dotenv()
@@ -114,9 +115,8 @@ def web_search(state):
     # Web search
     web_search_tool = TavilySearchResults(k=3)
     docs = web_search_tool.invoke({"query": question})
-    print( "documents:" , docs )
     web_results = "\n".join([d["content"] for d in docs])
-    web_results = [Document(page_content=web_results) for d in docs]
+    web_results = [Document(page_content=web_results, metadata = {"link": d["url"], "source":"web"}) for d in docs]
 
     return {"documents": web_results, "question": question}
 
@@ -154,7 +154,7 @@ def generate(state:State):
         """
         question = state["question"]
         documents = state["documents"]
-        top_contexts = [(doc.page_content, doc.metadata['link']) for doc in documents]
+        top_contexts = [(doc.page_content, doc.metadata['link'], doc.metadata['source']) for doc in documents]
         generation = generation_chain.invoke({"question": question, "context": top_contexts})
         return {"generation": generation, "question": question , "documents": documents }
 
@@ -183,15 +183,15 @@ def grade_generation_v_documents_and_question(state):
     if grade == "yes":
         print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
         # Check question-answering
-        # print("---GRADE GENERATION vs QUESTION---")
-        # score = answer_grader_agent.invoke({"question": question, "generation": generation})
-        # grade = score.binary_score
-        # if grade == "yes":
-        #     print("---DECISION: GENERATION ADDRESSES QUESTION---")
-        return "useful"
-        # else:
-        #     print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
-        #     return "not useful"
+        print("---GRADE GENERATION vs QUESTION---")
+        score = answer_grader_agent.invoke({"question": question, "generation": generation})
+        grade = score.binary_score
+        if grade == "yes":
+            print("---DECISION: GENERATION ADDRESSES QUESTION---")
+            return "useful"
+        else:
+            print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
+            return "not useful"
     else:
         print("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
         return "not supported"
@@ -240,13 +240,12 @@ def create_workflow():
         grade_generation_v_documents_and_question,
         {
              "useful": END,
-            #  "not useful": "transform_query",   
+             "not useful": "generate",   
              "not supported": "transform_query",
              
         }
     )
 
     app = workflow.compile()
-    print("Workflow created")
 
     return app

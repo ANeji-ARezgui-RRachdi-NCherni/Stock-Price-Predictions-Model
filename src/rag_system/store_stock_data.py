@@ -12,8 +12,6 @@ load_dotenv()
 index_name = os.getenv("INDEX_NAME")
 
 
-
-
 data_path = os.environ.get('DATA_PATH')
 
 def process_stock_data(stock_data_dir):
