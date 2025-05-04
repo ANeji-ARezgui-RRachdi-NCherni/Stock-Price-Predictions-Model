@@ -32,20 +32,20 @@ def reset_chat():
     st.session_state.messages = [{"role": "assistant", "content": "Let's start chatting! 👇"}]
     gc.collect()
 
-def display_pdf(file_bytes: bytes, file_name: str):
-    """Displays the uploaded PDF in an iframe."""
-    base64_pdf = base64.b64encode(file_bytes).decode("utf-8")
-    pdf_display = f"""
-    <iframe 
-        src="data:application/pdf;base64,{base64_pdf}" 
-        width="100%" 
-        height="600px" 
-        type="application/pdf"
-    >
-    </iframe>
-    """
-    st.markdown(f"### Preview of {file_name}")
-    st.markdown(pdf_display, unsafe_allow_html=True)    
+# def display_pdf(file_bytes: bytes, file_name: str):
+#     """Displays the uploaded PDF in an iframe."""
+#     base64_pdf = base64.b64encode(file_bytes).decode("utf-8")
+#     pdf_display = f"""
+#     <iframe 
+#         src="data:application/pdf;base64,{base64_pdf}" 
+#         width="100%" 
+#         height="600px" 
+#         type="application/pdf"
+#     >
+#     </iframe>
+#     """
+#     st.markdown(f"### Preview of {file_name}")
+#     st.markdown(pdf_display, unsafe_allow_html=True)    
 
 # ===========================
 #   Sidebar
@@ -68,7 +68,7 @@ with st.sidebar:
         st.success("PDF indexed! Ready to chat.")
 
         # Optionally display the PDF in the sidebar
-        display_pdf(uploaded_file.getvalue(), uploaded_file.name)
+        # display_pdf(uploaded_file.getvalue(), uploaded_file.name)
 
     st.button("Clear Chat", on_click=reset_chat)
 
@@ -93,7 +93,8 @@ if prompt := st.chat_input("Ask a question about Tunisian stock market and relat
 
     # 2. Build or reuse the Crew (only once after PDF is loaded)
     if st.session_state.agents is None:
-        st.session_state.agents = create_workflow()    
+        st.session_state.agents = create_workflow()
+        print("Agents created")    
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):

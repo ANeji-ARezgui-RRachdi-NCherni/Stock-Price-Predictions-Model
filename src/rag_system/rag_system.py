@@ -7,10 +7,7 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from dotenv import load_dotenv
 from graph_nodes import *
 
-
 load_dotenv()
-
-
 
 class State(TypedDict):
     """
@@ -54,8 +51,6 @@ def retrieve(state):
     """
     embedded_question= state["embedded_question"]
     question= state["question"]
-    # pc = Pinecone(api_key=pinecone_api_key)
-    # vector_store= PineconeVectorStore(index= pc.Index("langchain-test-index"), embedding=doc_embeddings)
     documents = vector_store.similarity_search_by_vector_with_score(
         embedding=embedded_question,
         k=7,
@@ -74,7 +69,7 @@ def grade_documents(state: State):
         for d in documents:
 
             score = retrieval_grader.invoke(
-                {"question": question, "document": d.page_content}
+                {"question": question, "document": d}
             )
             print(score)
             grade= score.binary_score
@@ -148,7 +143,7 @@ def generate(state:State):
         """
         question = state["question"]
         documents = state["documents"]
-        top_contexts = [doc.page_content for doc in documents]
+        top_contexts = [(doc.page_content, doc.metadata['link']) for doc in documents]
         generation = generation_chain.invoke({"question": question, "context": top_contexts})
         return {"generation": generation, "question": question , "documents": documents }
 
@@ -241,5 +236,6 @@ def create_workflow():
     )
 
     app = workflow.compile()
+    print("Workflow created")
 
     return app
