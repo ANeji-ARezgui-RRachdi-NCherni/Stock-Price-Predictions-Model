@@ -5,13 +5,15 @@ import os
 from dotenv import load_dotenv
 import argparse
 
-from constants import PAGE_URL, NEWS_BASE_URL
-from pinecone_vector_store import get_pinecone_vector_store
-
 from langchain_core.documents import Document
 from langchain_community.document_loaders import WebBaseLoader
-from langchain_pinecone import PineconeVectorStore
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(os.getcwd()) / '..'))
+from utils import get_pinecone_vector_store
+from utils import PAGE_URL, NEWS_BASE_URL
+
 
 
 

@@ -1,11 +1,13 @@
 name: Store News Articles
 
 on: 
-    workflow_dispatch:
+  push:
+    branches: 
+      - feat/rag_system
 
 jobs:
   scrape-news:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Repository
@@ -33,4 +35,4 @@ jobs:
         run: |
             source $HOME/miniconda/bin/activate
             conda activate Stock_Price_Prediction 
-            python -m utils.news_scraper.py 
+            python -m scripts.news_scraper 

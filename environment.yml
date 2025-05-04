@@ -16,9 +16,9 @@ dependencies:
       - langgraph
       - langchain-community
       - langchain-google-genai
+      - pinecone-client
       - langchain-pinecone
       - pinecone-notebooks
-      - pinecone-client
       - streamlit
       - torch
       - chonkie
