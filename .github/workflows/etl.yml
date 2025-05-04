@@ -62,7 +62,7 @@ jobs:
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
           dvc pull
-          python -m utils.download_automation --date $CURRENT_DATE
+          python -m scripts.download_data --date $CURRENT_DATE
           echo "Checking if any CSVs were created..."
           if ls data/raw/*.csv 1> /dev/null 2>&1; then
             dvc add data/raw/*.csv
@@ -77,7 +77,7 @@ jobs:
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction
           dvc pull
-          python -m utils.process_stock_data
+          python -m scripts.process_data
           if ls data/processed/*.csv 1> /dev/null 2>&1; then
             dvc add data/processed/*.csv
             git add data/processed/*.dvc .dvc/.gitignore

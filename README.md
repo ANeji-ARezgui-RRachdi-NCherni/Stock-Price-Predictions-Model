@@ -9,12 +9,14 @@ The repository is structured as follows:
 ```
 stock-price-predictions/
 │── .github/
-│   └── workflows/
-│       └── ci.yml  # CI/CD pipeline configuration
+│   └── workflows/  # Pipelines
+│── .dvc            # Dvc config folder
+│── enums           # Enums folder
 │── data/
 │   ├── processed/  # Processed datasets
 │   └── raw/        # Raw datasets
 │── notebooks/      # Jupyter notebooks for exploration and analysis
+│── scripts/        # Scripts for the jobs/pipelines
 │── src/
 │   ├── prediction_model/
 │   │   ├── data/
@@ -28,21 +30,23 @@ stock-price-predictions/
 │   ├── recommender_system/
 │   │   ├── __init__.py
 │   │   └── main.py  # Recommender system implementation
-│   ├── web/
-│   │   ├── back/  # Backend implementation (to be defined)
-│   │   ├── front/ # Frontend implementation (to be defined)
-│   │   ├── __init__.py
-│   │   └── main.py  # Web application entry point
+│   └── web/
+│       ├── back/  # Backend implementation
+│       ├── front/ # Frontend implementation
+│       ├── __init__.py
+│       └── main.py  # Web application entry point
 │── tests/
 │   ├── prediction_model/
-│   │   ├── test_data.py  # Unit tests for data processing
-│   │   └── test_model.py # Unit tests for model
-│   └── recommender_system/
-│── utils/
+│   ├── scripts/
+│   ├── utils/
+│   └── web/
+│── utils/ # Utility module
 │   └── constants.py  # Utility constants
+│── .dvcignore       # Dvc ignore file
+│── .env.example     # Example of the .env file
 │── .gitignore       # Git ignore file
 │── environment.yml  # Dependencies and environment configuration
-│── README.md        # Project documentation
+└── README.md        # Project documentation
 ```
 
 ---
