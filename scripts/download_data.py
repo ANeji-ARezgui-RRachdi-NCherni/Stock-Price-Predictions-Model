@@ -4,6 +4,11 @@ import argparse
 import requests
 from bs4 import BeautifulSoup
 import os
+
+
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(os.getcwd()) / '..'))
 from utils import RAW_DATA_DOWNLOAD_BASELINK, HEADERS, SYMBOLS
 
 def get_dates(start):
@@ -40,7 +45,7 @@ def update_dates(date):
     end_date=start_date+relativedelta(days= 83)
     return start_date,end_date
 
-def download_data(start_date, end_date ,cookies, token, session, link, fileName):
+def download(start_date, end_date ,cookies, token, session, link, fileName):
     # Extract cookies explicitly
     cookies = session.cookies.get_dict()
 
@@ -107,7 +112,7 @@ def main(date):
         fileName = f'{symbol}.csv'
 
         while  today >= start_date:
-            download_data(start_date,end_date,cookies,token,session,url_get,fileName)
+            download(start_date,end_date,cookies,token,session,url_get,fileName)
             #update the start and end dates
             start_date, end_date = update_dates(end_date)
 
