@@ -4,7 +4,9 @@ on:
   push:
     branches: 
       - feat/rag_system
-
+env:
+  KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
+  
 jobs:
   scrape-news:
     runs-on: ubuntu-24.04
