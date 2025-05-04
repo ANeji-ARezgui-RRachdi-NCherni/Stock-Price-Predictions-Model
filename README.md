@@ -31,15 +31,15 @@ stock-price-predictions/
 │   │   ├── __init__.py
 │   │   └── main.py  # Recommender system implementation
 │   └── web/
-│       ├── back/  # Backend implementation (to be defined)
-│       ├── front/ # Frontend implementation (to be defined)
+│       ├── back/  # Backend implementation
+│       ├── front/ # Frontend implementation
 │       ├── __init__.py
 │       └── main.py  # Web application entry point
 │── tests/
 │   ├── prediction_model/
 │   ├── scripts/
 │   ├── utils/
-│   └──  web/
+│   └── web/
 │── utils/ # Utility module
 │   └── constants.py  # Utility constants
 │── .dvcignore       # Dvc ignore file
