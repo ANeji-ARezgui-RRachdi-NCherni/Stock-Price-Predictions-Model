@@ -64,7 +64,7 @@ jobs:
           if ls data/raw/*.csv 1> /dev/null 2>&1; then
             dvc add data/raw/*.csv
             git add data/raw/*.dvc .dvc/.gitignore
-            git commit -m "Add raw data for $CURRENT_DATE"
+            git commit -m "Add raw data for $CURRENT_DATE" || echo "No raw changes to commit"
           else
             echo "No CSV files found in data/raw/. Skipping DVC add."
           fi
