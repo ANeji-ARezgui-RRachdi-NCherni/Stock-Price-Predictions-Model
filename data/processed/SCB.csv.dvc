@@ -1,0 +1,5 @@
+outs:
+- md5: 48c832199c476dcec234b325098bb320
+  size: 288736
+  hash: md5
+  path: SCB.csv

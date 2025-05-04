@@ -3,13 +3,31 @@ name: ETL Pipeline
 on:
   workflow_dispatch:
 
+env:
+  KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
+
 jobs:
   ETL:
     runs-on: ubuntu-24.04
 
     steps:
+    - name: Generate GitHub App token
+      id: generate-token
+      uses: tibdex/github-app-token@v2
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_PRIVATE_KEY }}
+        installation_retrieval_mode: repository
+        installation_retrieval_payload: ${{ github.repository }}
+
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ steps.generate-token.outputs.token }}
+
+    - name: Set current date
+      run: echo "CURRENT_DATE=$(date +'%d-%m-%Y')" >> $GITHUB_ENV
 
     - name: Set Up Python 3.11
       uses: actions/setup-python@v5
@@ -33,27 +51,48 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Configure Git for GitHub App
+      run: |
+        git config --global user.email "stock-prices-bot@github.com"
+        git config --global user.name "Stock Prices Bot"
       
     - name: Extract Data
       run: |
-          current_date=$(date +'%d-%m-%Y')
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction 
-          python -m utils.download_automation --date $current_date
+          dvc pull
+          python -m scripts.download_data --date $CURRENT_DATE
+          echo "Checking if any CSVs were created..."
+          if ls data/raw/*.csv 1> /dev/null 2>&1; then
+            dvc add data/raw/*.csv
+            git add data/raw/*.dvc .dvc/.gitignore
+            git commit -m "Add raw data for $CURRENT_DATE" || echo "No raw changes to commit"
+          else
+            echo "No CSV files found in data/raw/. Skipping DVC add."
+          fi
 
     - name: Transform data
       run: |
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction
           dvc pull
-          python -m utils.process_stock_data
+          python -m scripts.process_data
+          if ls data/processed/*.csv 1> /dev/null 2>&1; then
+            dvc add data/processed/*.csv
+            git add data/processed/*.dvc .dvc/.gitignore
+            git commit -m "Update processed data for $CURRENT_DATE" || echo "No changes to commit"
+          else
+            echo "No CSV files found in data/processed/. Skipping DVC add."
+          fi
 
     - name: Load data
       run: |
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction
           dvc push
-    
-    
 
- 
+    - name: Push changes to repository
+      run: |
+          git remote set-url origin https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/${{ github.repository }}
+          git push origin ${GITHUB_REF#refs/heads/}

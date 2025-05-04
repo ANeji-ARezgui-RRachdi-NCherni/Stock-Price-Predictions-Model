@@ -1,0 +1,5 @@
+outs:
+- md5: 850d475e2bd2708cd792a803a9df4df5
+  size: 7802
+  hash: md5
+  path: AMI.csv

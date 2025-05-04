@@ -4,6 +4,9 @@ dependencies:
   - pandas
   - numpy
   - scikit-learn
+  - keras
+  - statsmodels
+  - pmdarima
   - jupyter
   - matplotlib
   - pytest
@@ -12,6 +15,16 @@ dependencies:
       - valkey
       - "valkey[hiredis]"
       - dvc[azure]
+      - torch
+      - orjson
+      - fastapi==0.100.0
+      - pydantic==1.10.8
+      - uvicorn[standard]==0.22.0
+      - streamlit
+      - requests
+      - plotly
+      - python-dotenv
+      - requests_cache
       - langchain
       - langgraph
       - langchain-community
@@ -19,7 +32,5 @@ dependencies:
       - pinecone-client
       - langchain-pinecone
       - pinecone-notebooks
-      - streamlit
-      - torch
       - chonkie
       - markitdown

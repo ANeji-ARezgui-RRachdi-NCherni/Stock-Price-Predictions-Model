@@ -1,12 +1,12 @@
 import pytest
 from datetime import datetime, timedelta
 from unittest import mock
-import os
+
 from pathlib import Path
 import sys
-sys.path.insert(0, str(Path(os.getcwd()) / '..'/ '..'))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from utils import get_dates, update_dates, download_data
+from scripts.download_data import get_dates, update_dates, download
 
 # -------------- Fixtures ----------------
 @pytest.fixture
@@ -66,7 +66,7 @@ class TestDownloadData:
         # Mock st_size attribute to simulate empty file (size 0)
         mock_stat.return_value.st_size = 0
 
-        download_data(
+        download(
             "2024-01-01",
             "2024-03-24",
             cookies={},
@@ -85,7 +85,7 @@ class TestDownloadData:
         session_mock.post.return_value = failed_response
 
         with pytest.raises(Exception, match="❌ Failed to download file. Status code: 500"):
-            download_data(
+            download(
                 "2024-01-01",
                 "2024-03-24",
                 cookies={},
