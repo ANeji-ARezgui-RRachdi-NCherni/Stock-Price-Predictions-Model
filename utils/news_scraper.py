@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import argparse
 
 from constants import PAGE_URL, NEWS_BASE_URL
-from pinecone_index import get_pinecone_index
+from pinecone_vector_store import get_pinecone_vector_store
 
 from langchain_core.documents import Document
 from langchain_community.document_loaders import WebBaseLoader
@@ -17,6 +17,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 load_dotenv()
 embedding_model = os.getenv("EMBEDDING_MODEL")
+index_name = os.getenv("INDEX_NAME")
 
 
 def get_articles(date):
@@ -103,9 +104,8 @@ def store_docs(docs):
         docs (list[Document]): List of documents to store.
         
     """
-    index= get_pinecone_index("langchain-test-index")
-    doc_embeddings = GoogleGenerativeAIEmbeddings(model =embedding_model, task_type="RETRIEVAL_DOCUMENT") 
-    vector_store=PineconeVectorStore(index= index, embedding=doc_embeddings)
+    vector_store = get_pinecone_vector_store(index_name)
+    
     try:
         vector_store.add_documents(docs)
         print(f"Stored {len(docs)} documents in Pinecone.")

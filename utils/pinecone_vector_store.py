@@ -1,3 +1,6 @@
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_pinecone import PineconeVectorStore
+
 from pinecone import Pinecone, ServerlessSpec     
 import os
 from dotenv import load_dotenv
@@ -6,8 +9,11 @@ import time
 
 load_dotenv()
 pinecone_api_key = os.environ.get("PINECONE_API_KEY")
+embedding_model = os.environ.get("EMBEDDING_MODEL")
 
-def get_pinecone_index(index_name: str) -> Pinecone.Index:
+
+
+def get_pinecone_vector_store(index_name: str) -> PineconeVectorStore:
     """
     Initialize and return a Pinecone index.
 
@@ -15,7 +21,7 @@ def get_pinecone_index(index_name: str) -> Pinecone.Index:
         pinecone_api_key (str): Pinecone API key.
 
     Returns:
-        pinecone.Index: Initialized Pinecone index.
+        PineconeVectorStore: Pinecone VectorStore.
     """
     pc = Pinecone(api_key=pinecone_api_key)
       
@@ -32,4 +38,7 @@ def get_pinecone_index(index_name: str) -> Pinecone.Index:
             time.sleep(1)
 
     index = pc.Index(index_name)
-    return index
+    doc_embeddings= GoogleGenerativeAIEmbeddings(model =embedding_model, task_type="RETRIEVAL_DOCUMENT") 
+    vector_store = PineconeVectorStore(index=index, embedding=doc_embeddings)
+
+    return vector_store

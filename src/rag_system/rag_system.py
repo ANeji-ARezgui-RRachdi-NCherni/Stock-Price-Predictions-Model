@@ -2,12 +2,20 @@ from typing import List, TypedDict
 from langgraph.graph import StateGraph, END,  START
 from langchain_core.documents import Document
 from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 
+import os
 from dotenv import load_dotenv
 from graph_nodes import *
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(os.getcwd()) / '..'))
+from utils import get_pinecone_vector_store
 
 load_dotenv()
+embedding_model = os.getenv("EMBEDDING_MODEL")
+index_name = os.getenv("INDEX_NAME")
 
 class State(TypedDict):
     """
@@ -36,6 +44,7 @@ def embed_question(state:State):
         state (dict): The state of the graph with the embedded question in a new key.
     """
     question = state["question"]
+    query_embeddings = GoogleGenerativeAIEmbeddings(model =embedding_model, task_type="RETRIEVAL_QUERY") 
     q_embed = query_embeddings.embed_query(text=question)
     return {"embedded_question": q_embed, "question": question}
 
@@ -51,6 +60,7 @@ def retrieve(state):
     """
     embedded_question= state["embedded_question"]
     question= state["question"]
+    vector_store = get_pinecone_vector_store(index_name)
     documents = vector_store.similarity_search_by_vector_with_score(
         embedding=embedded_question,
         k=7,
@@ -104,8 +114,9 @@ def web_search(state):
     # Web search
     web_search_tool = TavilySearchResults(k=3)
     docs = web_search_tool.invoke({"query": question})
+    print( "documents:" , docs )
     web_results = "\n".join([d["content"] for d in docs])
-    web_results = [Document(page_content=web_results)]
+    web_results = [Document(page_content=web_results) for d in docs]
 
     return {"documents": web_results, "question": question}
 
