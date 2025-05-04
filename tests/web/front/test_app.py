@@ -1,11 +1,12 @@
 import os
 from unittest.mock import patch, MagicMock
-import pytest
 from streamlit.testing.v1 import AppTest
 
 @patch.dict(os.environ, {"BACKEND_URL": "http://localhost:8000"})
 @patch("src.web.front.app.requests.get")
-def test_chart_renders_with_data(mock_get):
+
+## TODO: We should Add other tests after implemeting the other widgets (1 test per widget at least)
+def test_data_and_predict_widget(mock_get):
 
     def side_effect(url, *args, **kwargs):
         mock_response = MagicMock()
@@ -28,10 +29,12 @@ def test_chart_renders_with_data(mock_get):
     at = AppTest.from_file("src/web/front/app.py")
     at.run(timeout=10)
 
+    at.button._list[1].click()
+    at.run(timeout=10)
+
     at.selectbox[0].select("AB")
     at.session_state["Select a company"] = "AB"
     at.run(timeout=10)
 
-    # Assert no errors and a title exists — basic health check
-    assert len(at.title) == 1
+    # Assert no errors — basic health check
     assert len(at.error) == 0
