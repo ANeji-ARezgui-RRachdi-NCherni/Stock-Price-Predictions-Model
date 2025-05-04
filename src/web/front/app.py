@@ -100,14 +100,14 @@ with st.spinner(f"Loading {current_page}..."):
     elif current_page == "Data & Predict":
         st.header("📉 Historical & Predicted Stock Prices")
         try:
-            companies = requests.get(f"{BACKEND_URL}/companies").json()
+            companies = cacheSession.get(f"{BACKEND_URL}/companies").json()
         except Exception:
             st.error("❌ Could not fetch company list.")
             st.stop()
         company = st.selectbox("Select a company", companies)
         if company:
             with st.spinner("Fetching data..."):
-                res = requests.get(f"{BACKEND_URL}/stock/{company}")
+                res = cacheSession.get(f"{BACKEND_URL}/stock/{company}")
                 df = pd.DataFrame(res.json()["data"])
                 df["date"] = pd.to_datetime(df["date"])
                 df.set_index("date", inplace=True)
