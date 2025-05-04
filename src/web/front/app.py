@@ -30,7 +30,7 @@ div[data-testid="stHorizontalBlock"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
+}   
 .top-logo {
     font-size: 1.8rem;
     font-weight: 700;
@@ -48,13 +48,18 @@ div[data-testid="stHorizontalBlock"] {
     color: white;
     border: none;
     padding: 0.45rem 1.1rem;
-    border-radius: 20px;
+    border-radius: 5px;
     font-size: 1rem;
     cursor: pointer;
     transition: background 0.2s ease;
+    width: 80%
 }
 .stButton > button:hover {
     background-color: #577590;
+    color: white;
+}
+.st-emotion-cache-seewz2 {
+    margin-bottom: 0px
 }
 </style>
 """, unsafe_allow_html=True)
