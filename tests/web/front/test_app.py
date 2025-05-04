@@ -3,7 +3,8 @@ from unittest.mock import patch, MagicMock
 from streamlit.testing.v1 import AppTest
 
 @patch.dict(os.environ, {"BACKEND_URL": "http://localhost:8000"})
-@patch("src.web.front.app.requests.get")
+@patch.dict(os.environ, {"FRONTEND_CACHE_EXPIRATION_TIME": "28800"})
+@patch("requests_cache.CachedSession.get")
 
 ## TODO: We should Add other tests after implemeting the other widgets (1 test per widget at least)
 def test_data_and_predict_widget(mock_get):

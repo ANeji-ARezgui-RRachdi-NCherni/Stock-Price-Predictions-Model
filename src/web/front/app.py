@@ -1,13 +1,16 @@
 import os
 from dotenv import load_dotenv
 import streamlit as st
-import requests
+from requests_cache import CachedSession
 import pandas as pd
 import plotly.express as px
 
 # Load environment variables
 load_dotenv()
 BACKEND_URL = os.environ.get("BACKEND_URL")
+
+CACHE_EXPIRATION_TIME = int(os.environ["FRONTEND_CACHE_EXPIRATION_TIME"])
+cache_session = CachedSession('cache', expire_after=CACHE_EXPIRATION_TIME)
 
 # Streamlit config
 st.set_page_config(page_title="StockWise", page_icon="📈", layout="wide")
@@ -97,14 +100,14 @@ with st.spinner(f"Loading {current_page}..."):
     elif current_page == "Data & Predict":
         st.header("📉 Historical & Predicted Stock Prices")
         try:
-            companies = requests.get(f"{BACKEND_URL}/companies").json()
+            companies = cache_session.get(f"{BACKEND_URL}/companies").json()
         except Exception:
             st.error("❌ Could not fetch company list.")
             st.stop()
         company = st.selectbox("Select a company", companies)
         if company:
             with st.spinner("Fetching data..."):
-                res = requests.get(f"{BACKEND_URL}/stock/{company}")
+                res = cache_session.get(f"{BACKEND_URL}/stock/{company}")
                 df = pd.DataFrame(res.json()["data"])
                 df["date"] = pd.to_datetime(df["date"])
                 df.set_index("date", inplace=True)
