@@ -1,13 +1,16 @@
 import os
 from dotenv import load_dotenv
 import streamlit as st
-import requests
+from requests_cache import CachedSession
 import pandas as pd
 import plotly.express as px
 
 # Load environment variables
 load_dotenv()
 BACKEND_URL = os.environ.get("BACKEND_URL")
+
+CACHE_EXPIRATION_TIME = int(os.environ["FRONTEND_CACHE_EXPIRATION_TIME"])
+cacheSession = CachedSession('cache', expire_after=CACHE_EXPIRATION_TIME)
 
 # Streamlit config
 st.set_page_config(page_title="StockWise", page_icon="📈", layout="wide")
