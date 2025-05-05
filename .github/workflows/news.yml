@@ -1,8 +1,9 @@
 name: Store News Articles
 
 on: 
-   schedule:
-    - cron: '0 0 * * *'
+  push:
+    branches: 
+      - feat/rag_system
 env:
   KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
   
