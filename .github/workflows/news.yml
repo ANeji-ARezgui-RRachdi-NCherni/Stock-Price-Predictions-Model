@@ -2,6 +2,7 @@ name: Store News Articles
 
 on: 
   workflow_dispatch:
+    
 env:
   KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
   PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
