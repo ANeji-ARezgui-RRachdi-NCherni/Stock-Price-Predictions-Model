@@ -64,7 +64,7 @@ def retrieve(state):
     vector_store = get_pinecone_vector_store(index_name)
     documents = vector_store.similarity_search_by_vector_with_score(
         embedding=embedded_question,
-        k=7,
+        k=5,
         )
     documents = [d[0] for d in documents]
     print(f"Retrieved {len(documents)} documents")

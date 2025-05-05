@@ -12,8 +12,6 @@ load_dotenv()
 index_name = os.getenv("INDEX_NAME")
 
 
-data_path = os.environ.get('DATA_PATH')
-
 def process_stock_data(stock_data_dir):
     """
     Load data from a CSV file.
@@ -34,9 +32,8 @@ def process_stock_data(stock_data_dir):
     stock_data = "\n".join(stock_data)
     text_splitter = RecursiveCharacterTextSplitter(
             separators=["\n"],
-            chunk_size=1024,  # chunk size (characters)
-            chunk_overlap=0,  # chunk overlap (characters)
-            # add_start_index=True,  # track index in original document
+            chunk_size=1024,  
+            chunk_overlap=0,      
         )
     splits = text_splitter.split_text(stock_data)
  

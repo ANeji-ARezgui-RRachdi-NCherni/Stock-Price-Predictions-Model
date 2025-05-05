@@ -33,7 +33,7 @@ jobs:
           conda init bash
           conda env create --file environment.yml --name Stock_Price_Prediction
 
-      - name: Extract Data
+      - name: Extract and Store News Articles
         run: |
             source $HOME/miniconda/bin/activate
             conda activate Stock_Price_Prediction 

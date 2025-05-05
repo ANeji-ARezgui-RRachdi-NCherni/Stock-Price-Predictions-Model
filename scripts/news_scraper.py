@@ -16,8 +16,8 @@ from utils import PAGE_URL, NEWS_BASE_URL
 
 
 
-
 load_dotenv()
+
 embedding_model = os.getenv("EMBEDDING_MODEL")
 index_name = os.getenv("INDEX_NAME")
 
@@ -63,7 +63,7 @@ def get_articles(date):
                     articles.append(article)   
                     
     else:
-        print("Tableau introuvable.")
+        print("Articles Table not found on the page.")
 
     return articles
 

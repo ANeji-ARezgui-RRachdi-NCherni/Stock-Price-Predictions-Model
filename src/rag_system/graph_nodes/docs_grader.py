@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-# from dotenv import load_dotenv
 import os
 from dotenv import load_dotenv
 
@@ -14,7 +13,7 @@ class GradeDocuments(BaseModel):
         """ Binary score for relevence check for retrived documents"""
 
         binary_score: str =Field(
-            description="Documents are relevnt to the question, 'yes' or 'no' "
+            description="Documents are relevent to the question, 'yes' or 'no' "
         )
 
 chat_model = ChatGoogleGenerativeAI(model= model_name, temperature=0, google_api_key= api_key)
