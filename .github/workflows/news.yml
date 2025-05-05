@@ -1,11 +1,11 @@
 name: Store News Articles
 
 on: 
-  push:
-    branches: 
-      - feat/rag_system
+  workflow_dispatch:
 env:
   KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
+  PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+  USER_AGENT: ${{ vars.USER_AGENT }}
   
 jobs:
   scrape-news:
