@@ -25,3 +25,12 @@ dependencies:
       - plotly
       - python-dotenv
       - requests_cache
+      - langchain
+      - langgraph
+      - langchain-community
+      - langchain-google-genai
+      - pinecone-client
+      - langchain-pinecone
+      - pinecone-notebooks
+      - chonkie
+      - markitdown
