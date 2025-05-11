@@ -7,6 +7,11 @@ on:
     branches:
       - main
 
+env:
+  KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
+  MODEL_NAME: ${{ vars.MODEL_NAME }}
+  WINDOW_SIZE: ${{ vars.WINDOW_SIZE }}
+
 jobs:
   train-model:
     runs-on: ubuntu-24.04
@@ -60,4 +65,5 @@ jobs:
           echo "PYTHONPATH: $PYTHONPATH"
 
           # Run the training script
-          echo "Training model on Azure ML (To be implemented)"
+          echo "Training model on Azure ML"
+          python -m scripts.train_model

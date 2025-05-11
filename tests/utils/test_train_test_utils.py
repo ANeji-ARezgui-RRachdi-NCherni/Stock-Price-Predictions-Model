@@ -5,13 +5,14 @@ from unittest.mock import Mock, patch
 import pytest
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
+from datetime import datetime
 
 # we need to change directory to import modules
 import sys,os
 from pathlib import Path
 sys.path.insert(0, str(Path(os.getcwd()) / '..' / '..'))
-from src import IModel, ARIMAModel
-from utils import split_dataset, get_features_target_from_dataset, plot_stock_graph, train, evaluate, plot_evaluation_result
+from src import IModel
+from utils import split_dataset, get_features_target_from_dataset, plot_stock_graph, train, evaluate, plot_evaluation_result, train_model, predict
 from enums import ValidationMetricEnum
 
 def test_split_dataset():
@@ -110,7 +111,36 @@ def test_plot_stock_graph_calls_plotting(mock_plt):
         mock_title.assert_called_once()
         mock_legend.assert_called_once()
         mock_show.assert_called_once()
-    
 
+def test_predict_sequence_generation():
+    mock_model = Mock(spec=IModel)
+    mock_model.predict.side_effect = lambda x: np.array([[0.5]])
+
+    dataset = np.array([[i] for i in range(10)])
+    scaler = MinMaxScaler()
+    scaler.fit(dataset)
+
+    predictions = predict(mock_model, dataset, scaler, num_days=3, window_size=2)
+
+    # Check correct number of predictions
+    assert predictions.shape[0] == 3
+    assert mock_model.predict.call_count == 3
+
+@patch("utils.train_test_utils.train")
+def test_train_model_trains_and_returns_scaler(mock_train_func):
+    mock_model = Mock(spec=IModel)
+    model_name = "LSTM"
+    dataset = np.array([[i] for i in range(20)])
+    old_scaler = MinMaxScaler().fit(dataset)
+    window_size = 5
+    last_trained_date = datetime.now()
+
+    mock_train_func.return_value = {model_name: old_scaler}
+    result_scaler = train_model(mock_model, model_name, dataset, old_scaler, window_size, last_trained_date)
+
+    assert isinstance(result_scaler, MinMaxScaler)
+    mock_train_func.assert_called_once()
+
+    
 if __name__ == "__main__":
     pytest.main()
