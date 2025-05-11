@@ -6,6 +6,7 @@ on:
       - data/processed/**  # Trigger when processed data is updated
     branches:
       - main
+  workflow_dispatch:
 
 env:
   KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
