@@ -5,3 +5,4 @@ SYMBOLS= [ "HL","GIF","ECYCL","SOKNA","NAKL","LSTR","ELBEN","DH","CITY","SCB","C
     "ASSMA","ASSAD","ARTES","ATL","ATB","AMS","AMI","AB","AL","AETEC","ADWYA"] 
 NEWS_BASE_URL = "https://www.ilboursa.com"
 PAGE_URL= NEWS_BASE_URL+"/marches/actualites_bourse_tunis"
+STOCK_DATA_URL = NEWS_BASE_URL+"/marches/aaz"
