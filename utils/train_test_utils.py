@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler 
 from enums import ValidationMetricEnum
+from datetime import datetime
 
 # we need to change directory to import IModel interface
 import sys,os
@@ -46,11 +47,23 @@ def get_features_target_from_dataset(dataset: np.ndarray, ShouldOnlyKeepCloseCol
         Y.append(y_to_append)
     return np.array(X), np.array(Y)
 
-def train(models_dictionary: Dict[str, tuple[IModel, pd.DataFrame, pd.DataFrame]]) -> Dict[str, MinMaxScaler]:
-    scaler_dict = {}
+def train_model(model: IModel, model_name: str, dataset: pd.DataFrame | np.ndarray, old_scaler: MinMaxScaler, window_size: int, last_trained_date: datetime) -> MinMaxScaler:
+    model_dict = {model_name: (model, dataset, pd.DataFrame([]))} # we don't care about the test dataset
+    if old_scaler:
+        scaler_dict = {model_name: old_scaler}
+    else:
+        scaler_dict = None
+    scaler = train(model_dict, window_size, scaler_dict=scaler_dict, last_trained_date=last_trained_date)[model_name]
+    return scaler
+
+def train(models_dictionary: Dict[str, tuple[IModel, pd.DataFrame | np.ndarray, pd.DataFrame | np.ndarray]], window_size: int = 60, scaler_dict: Dict[str, MinMaxScaler] = None, last_trained_date: datetime = datetime.today()) -> Dict[str, MinMaxScaler]:
+    new_scaler_dict = {}
     for name, tuple in models_dictionary.items():
         print(f"training {name} model ...")
-        scaler = MinMaxScaler()
+        if scaler_dict == None or (name not in scaler_dict) or scaler_dict.get(name) == None:
+            scaler = MinMaxScaler()
+        else :
+            scaler = scaler_dict.get(name)
         model = tuple[0]
         df = tuple[1]
         ShouldOnlyKeepCloseCol = df.shape[1] > 1 # if the dataframe has more than one column we need to keep cloture only as target
@@ -64,10 +77,21 @@ def train(models_dictionary: Dict[str, tuple[IModel, pd.DataFrame, pd.DataFrame]
         else :
             df_transformed = scaler.fit_transform(df)
             closeColIdx = 0
-        x_train, y_train = get_features_target_from_dataset(df_transformed, ShouldOnlyKeepCloseCol, closeColIdx=closeColIdx, isArimaContext=isArimaContext)
-        model.train(x_train, y_train)
-        scaler_dict[name] = scaler
-    return scaler_dict
+        x_train, y_train = get_features_target_from_dataset(df_transformed, ShouldOnlyKeepCloseCol, closeColIdx=closeColIdx, isArimaContext=isArimaContext, window=window_size)
+        model.train(x_train, y_train, last_trained_date)
+        new_scaler_dict[name] = scaler
+    return new_scaler_dict
+
+def predict(model: IModel, dataset: np.ndarray, scaler: MinMaxScaler, num_days: int, window_size: int) -> np.ndarray:
+    last_n_days = scaler.transform(dataset[:-window_size])
+    output = np.array([])
+    for i in range(num_days):
+        predicted_value = model.predict(last_n_days)
+        transformed_predicted_value = scaler.inverse_transform(predicted_value)
+        last_n_days = np.delete(last_n_days, 0)
+        last_n_days = np.append(last_n_days, predicted_value)
+        output = np.append(output, transformed_predicted_value)
+    return output
 
 def evaluate(models_dictionary: Dict[str, tuple[IModel, pd.DataFrame, pd.DataFrame, pd.DataFrame]], metric: ValidationMetricEnum, scaler_dict: Dict[str, MinMaxScaler]) -> Dict[str, float]:
     result = {}
