@@ -16,7 +16,7 @@ cache_session = CachedSession('cache', expire_after=CACHE_EXPIRATION_TIME)
 st.set_page_config(page_title="StockWise", page_icon="📈", layout="wide")
 
 # Define navigation pages
-PAGES = ["Home", "Data & Predict", "News & Insights", "Chatbot"]
+PAGES = ["Home", "Data & Predict", "News"]
 params = st.query_params
 current_page = params.get("page", "Home")
 if current_page not in PAGES:
@@ -68,7 +68,7 @@ div[data-testid="stHorizontalBlock"] {
 """, unsafe_allow_html=True)
 
 # --- Render top bar (logo + nav buttons) in one row ---
-logo_col, *nav_cols = st.columns([2, 1, 1, 1, 1])
+logo_col, *nav_cols = st.columns([2, 1, 1, 1])
 with logo_col:
     st.markdown("""
     <div class="top-logo">
@@ -83,6 +83,7 @@ for col, page in zip(nav_cols, PAGES):
             st.query_params["page"] = page
             st.rerun()
 
+
 # --- Main content ---
 with st.spinner(f"Loading {current_page}..."):
     if current_page == "Home":
@@ -96,6 +97,7 @@ with st.spinner(f"Loading {current_page}..."):
             "🧘 Focus on long-term goals."
         ]:
             st.success(tip)
+ 
 
     elif current_page == "Data & Predict":
         st.header("📉 Historical & Predicted Stock Prices")
@@ -124,9 +126,7 @@ with st.spinner(f"Loading {current_page}..."):
         st.header("📰 Market News & Recommendations")
         st.info("Coming soon — stay tuned!")
 
-    elif current_page == "Chatbot":
-        st.header("💬 AI Chat Assistant")
-        st.warning("Under development — check back soon!")
+            
 
 # --- Hide footer ---
 st.markdown('<style>footer {visibility: hidden;}</style>', unsafe_allow_html=True)

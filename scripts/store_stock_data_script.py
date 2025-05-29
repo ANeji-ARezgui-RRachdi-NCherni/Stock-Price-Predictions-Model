@@ -7,9 +7,14 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 from pathlib import Path
+
 import sys
 sys.path.insert(0, str(Path(os.getcwd()) / '..'))
-from utils import get_pinecone_vector_store, STOCK_DATA_URL
+from utils import STOCK_DATA_URL
+from src import get_pinecone_vector_store
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
 
 load_dotenv()
 index_name = os.environ.get("INDEX_NAME")
@@ -18,13 +23,26 @@ print(f"Index name: {index_name}")
 DATA_PATH = os.path.join(os.path.dirname(__file__), "../data/processed")
 DATA_PATH = os.path.abspath(DATA_PATH)
 
-    
+
+def delete_old_stock_data():
+    """
+    Delete old stock data files from Pinecone vectorstore.
+    """
+    vector_store = get_pinecone_vector_store(index_name)
+    ids = vector_store.index.list(prefix="stock#")
+    try:
+        vector_store.delete(ids=list(ids))
+        # Delete old stock data files from the local directory  
+        print("Old stock data deleted successfully.")
+    except Exception as e:
+        print(f"Error deleting old stock data: {e}")
+
 def fetch_stock_data():
     """
     Fetch stock data from cloud storage.
         
     Returns:
-        df_list: List of dataframes containingg stock data.
+        df_list: List of dataframes containing stock data.
     """
     df_list = []
     for dvc_file in os.listdir(DATA_PATH):
@@ -49,16 +67,18 @@ def preprocess_stock_data(df_list:List [pd.DataFrame]) -> List[pd.DataFrame]:
     Preprocess stock data by filtering for recent dates.
     
     Args:
-        df_list (List[pd.DataFrame]): list of dataframes to process.
+        df_list (List[pd.DataFrame]): list of dataframes containing stock data to process.
 
     Returns:
         filtered_dfs: List of filtered dataframes.        
     """
+    two_years_ago = date.today() - relativedelta(years=2)
+    formatted_date = two_years_ago.strftime("%Y-%m-%d")
     filtered_dfs = []
     for df in df_list:
-        filtered_df = df[df['date'] >= '2024-01-01']
+        filtered_df = df[df['date'] >= formatted_date]
         if filtered_df.empty:
-            print(f"No data available for {df['stock'][0]} after 2024-01-01.")
+            print(f"No data available for {df['stock'][0]} after {formatted_date}. Skipping this stock.")
             continue
         filtered_dfs.append(filtered_df)
 
@@ -130,10 +150,12 @@ def store_stock_data(docs,ids, batch_size=559):
 
 
 def main():
+    delete_old_stock_data()
     df_list = fetch_stock_data()
     filtered_dfs = preprocess_stock_data(df_list)
     docs,ids = process_stock_data(filtered_dfs)
     store_stock_data(docs,ids)
+    
 
 if __name__ == "__main__":
     main()    

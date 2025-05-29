@@ -4,15 +4,12 @@ from langchain_core.documents import Document
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-
 import os
 from dotenv import load_dotenv
-from graph_nodes import *
+from .graph_nodes import *
+from .pinecone_vector_store import get_pinecone_vector_store
 
-from pathlib import Path
-import sys
-sys.path.insert(0, str(Path(os.getcwd()) / '..' / '..'))
-from utils import get_pinecone_vector_store
+
 
 load_dotenv()
 embedding_model = os.getenv("EMBEDDING_MODEL")

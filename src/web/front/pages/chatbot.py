@@ -2,19 +2,23 @@ import streamlit as st
 import time
 import gc
 import torch
+import os
 
-from rag_system import create_workflow
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(os.getcwd()) / '..' / '..'/ '..'))
+from rag.rag_system import create_workflow
 
 torch.classes.__path__ = []
 
+st.set_page_config(page_title="StockWise", page_icon="📈", layout="centered")
+st.header("💬 AI Chat Assistant")
 
-st.header("Tunisian Stock Market Agentic RAG :chart_with_upwards_trend: :flag-tn:")
-
-st.subheader("Ask questions about Tunisian Stock Market trends")
+# st.subheader("Ask questions about Tunisian Stock Market trends")
 
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Let's start chatting! 👇"}]
+    st.session_state.messages = [{"role": "assistant", "content": "Ask questions about Tunisian Stock Market trends 📈"}]
 
 if "pdf_tool" not in st.session_state:
     st.session_state.pdf_tool = None 
