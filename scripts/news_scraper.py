@@ -76,7 +76,7 @@ def process_urls(articles) -> list[Document]:
         urls (Sequence): Sequence of URLs to load data from.
     
     Returns:
-        splits: List of documents.
+        docs: List of documents.
         
     """
     bs4_strainer = SoupStrainer(class_=("inarticle txtbig"))

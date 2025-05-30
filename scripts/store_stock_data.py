@@ -7,18 +7,18 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 from pathlib import Path
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 import sys
 sys.path.insert(0, str(Path(os.getcwd()) / '..'))
 from utils import STOCK_DATA_URL
 from src import get_pinecone_vector_store
-from datetime import date
-from dateutil.relativedelta import relativedelta
+
 
 
 load_dotenv()
 index_name = os.environ.get("INDEX_NAME")
-print(f"Index name: {index_name}")
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "../data/processed")
 DATA_PATH = os.path.abspath(DATA_PATH)
