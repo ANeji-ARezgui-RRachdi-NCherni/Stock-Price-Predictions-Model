@@ -3,7 +3,7 @@ name: Azure ML Training Pipeline
 on:
   push:
     paths:
-      - data/processed/**  # Trigger when processed data is updated
+      - data/processed/**
     branches:
       - main
   workflow_dispatch:
@@ -68,3 +68,15 @@ jobs:
           # Run the training script
           echo "Training model on Azure ML"
           python -m scripts.train_model
+
+      - name: Deploy to Azure ML
+        shell: bash -l {0}
+        env:
+          AZURE_RESOURCE_GROUP:   ${{ secrets.AZURE_RESOURCE_GROUP }}
+          AZURE_ML_WORKSPACE:     ${{ secrets.AZURE_ML_WORKSPACE }}
+          MODEL_NAME:             ${{ vars.MODEL_NAME }}
+        run: |
+          source $HOME/miniconda/bin/activate
+          conda env update --file environment.yml --name Stock_Price_Prediction
+          conda activate Stock_Price_Prediction
+          python -m scripts.deploy_model

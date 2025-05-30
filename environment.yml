@@ -34,3 +34,6 @@ dependencies:
       - pinecone-notebooks
       - chonkie
       - markitdown
+      - azure-ai-ml
+      - azure-identity
+      - joblib
