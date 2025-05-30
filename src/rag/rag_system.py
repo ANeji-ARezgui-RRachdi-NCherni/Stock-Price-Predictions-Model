@@ -27,9 +27,24 @@ class State(TypedDict):
     question: str
     embedded_question: List[float] = []
     documents: List[Document]= []
+    topic: str = ""
     generation :str =""
 
 
+
+def classify_question(state:State):
+    """
+    Classify the question into a topic.
+
+    Args:
+        state (State): The state of the graph.
+
+    Returns:
+        state (dict): The state of the graph with the classified topic in a new key.
+    """
+    question = state["question"]
+    topic = input_classifer.invoke({"user_input": question})
+    return {"topic": topic, "question": question}
 
 def embed_question(state:State):
     """
@@ -46,7 +61,7 @@ def embed_question(state:State):
     q_embed = query_embeddings.embed_query(text=question)
     return {"embedded_question": q_embed, "question": question}
 
-def retrieve(state):
+def retrieve(state:State):
     """
     Retrieve Documents
 
@@ -58,36 +73,23 @@ def retrieve(state):
     """
     embedded_question= state["embedded_question"]
     question= state["question"]
+    topic = state["topic"]
     vector_store = get_pinecone_vector_store(index_name)
+    if topic == "news":
+        filter = {"source": "news"}
+    elif topic == "stocks":
+        filter = {"source": "stock_data"}
+    else:
+        filter = None      
+
     documents = vector_store.similarity_search_by_vector_with_score(
         embedding=embedded_question,
-        k=5,
+        k= 20,
+        filter=filter
         )
-    documents = [d[0] for d in documents]
+    documents = [d[0] for d in documents if d[1] > 0.4]  # Filter out low similarity scores
     print(f"Retrieved {len(documents)} documents")
     return {"documents": documents ,  "question": question }
-
-def grade_documents(state: State):
-
-        print("---CHECK DOCUMENT RELEVNECE TO QUESTION ---")
-        question = state['question']
-        documents = state['documents']
-
-        filtered_docs=[]
-        for d in documents:
-
-            score = retrieval_grader.invoke(
-                {"question": question, "document": d}
-            )
-            print(score)
-            grade= score.binary_score
-            if grade == "yes":
-                print(f"Document is relevant to the question")
-                filtered_docs.append(d)
-            else:
-                print(f"Document is not relevant to the question") 
-                continue
-        return {"documents": filtered_docs, "question": question }
 
 def transform_query(state:State):
 
@@ -95,32 +97,20 @@ def transform_query(state:State):
         better_question = question_rewriter.invoke({"question": state["question"]})
         return ({"question": better_question})
 
-def web_search(state):
+def off_topic(state:State):
     """
-    Web search based on the re-phrased question.
-
-    Args:
-        state (dict): The current graph state
+    Resonse for user questions that are off topic.
 
     Returns:
-        state (dict): Updates documents key with appended web results
+        state (dict): returns the state with a response indicating the question is off topic.
     """
-
-    print("---WEB SEARCH---")
-    question = state["question"]
-
-    # Web search
-    web_search_tool = TavilySearchResults(k=3)
-    docs = web_search_tool.invoke({"query": question})
-    web_results = "\n".join([d["content"] for d in docs])
-    web_results = [Document(page_content=web_results, metadata = {"link": d["url"], "source":"web"}) for d in docs]
-
-    return {"documents": web_results, "question": question}
+    response = "I'm sorry, I only answer questions related to the Tunisian stock market and related news."
+    return {"generation" : response}
 
 
-def route_question(state):
+def route_question(state:State):
     """
-    Route question to web search or RAG.
+    Route question to RAG or off topic if it is not relevent.
 
     Args:
         state (dict): The current graph state
@@ -129,14 +119,11 @@ def route_question(state):
         str: Next node to call
     """
 
-    print("---ROUTE QUESTION---")
     question = state["question"]
     source = question_router.invoke({"question": question})
-    if source.datasource == "web_search":
-        print("---ROUTE QUESTION TO WEB SEARCH---")
-        return "web_search"
+    if source.datasource == "off_topic":
+        return "off_topic"
     elif source.datasource == "vectorstore":
-        print("---ROUTE QUESTION TO RAG---")
         return "vectorstore"
 
 def generate(state:State):
@@ -152,96 +139,34 @@ def generate(state:State):
         question = state["question"]
         documents = state["documents"]
         top_contexts = [(doc.page_content, doc.metadata['link'], doc.metadata['source']) for doc in documents]
-        generation = generation_chain.invoke({"question": question, "context": top_contexts})
+        generation = generation_chain.invoke({"question": question, "context": top_contexts, "topic" : state["topic"]})
         return {"generation": generation, "question": question , "documents": documents }
 
-def grade_generation_v_documents_and_question(state):
-    """
-    Determines whether the generation is grounded in the document and answers question.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        str: Decision for next node to call
-    """
-
-    print("---CHECK HALLUCINATIONS---")
-    question = state["question"]
-    documents = state["documents"]
-    generation = state["generation"]
-
-    score = hallucination_grader_agent.invoke(
-        {"documents": documents, "generation": generation}
-    )
-    grade = score.binary_score
-
-    # Check hallucination
-    if grade == "yes":
-        print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
-        # Check question-answering
-        print("---GRADE GENERATION vs QUESTION---")
-        score = answer_grader_agent.invoke({"question": question, "generation": generation})
-        grade = score.binary_score
-        if grade == "yes":
-            print("---DECISION: GENERATION ADDRESSES QUESTION---")
-            return "useful"
-        else:
-            print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
-            return "not useful"
-    else:
-        print("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
-        return "not supported"
 
 def create_workflow():
 
     workflow = StateGraph(State)
+
+    workflow.add_node("classify_question",classify_question )
+    workflow.add_node("off_topic", off_topic) 
+    workflow.add_node("embed_question", embed_question)
+    workflow.add_node("retrieve", retrieve)
+    workflow.add_node("generate", generate)
+    workflow.add_node("transform_query", transform_query)
+
     workflow.add_conditional_edges(
         START,
         route_question,
             {
-                "web_search": "web_search",
-                "vectorstore": "embed_question",
+                "off_topic": "off_topic",
+                "vectorstore": "classify_question",
             }   
-        )
-
-    workflow.add_node("embed_question", embed_question)
-    workflow.add_node("retrieve", retrieve)
-    workflow.add_node("web_search", web_search) 
-    workflow.add_node("grade_documents", grade_documents)
-    workflow.add_node("transform_query", transform_query)
-    workflow.add_node("generate", generate)
-
-    
-    workflow.add_edge("web_search", "generate")
+        )    
+    workflow.add_edge("classify_question", "embed_question")
+    workflow.add_edge("off_topic", END)
     workflow.add_edge("embed_question","retrieve")
-    workflow.add_edge("retrieve", "grade_documents")
-    workflow.add_conditional_edges(
-        "grade_documents",
-        lambda state: ("generate" if len(state["documents"]) > 0 else "transform_query"),
-        {
-            "transform_query": "transform_query",
-            "generate": "generate",
-        }   
-    )
-    workflow.add_conditional_edges(
-        "transform_query",
-        route_question,
-            {
-                "web_search": "web_search",
-                "vectorstore": "retrieve",
-            }   
-        )
-    workflow.add_conditional_edges(
-        "generate",
-        grade_generation_v_documents_and_question,
-        {
-             "useful": END,
-             "not useful": "generate",   
-             "not supported": "transform_query",
-             
-        }
-    )
+    workflow.add_edge("retrieve", "generate")
+    workflow.add_edge("generate",END )
 
     app = workflow.compile()
 

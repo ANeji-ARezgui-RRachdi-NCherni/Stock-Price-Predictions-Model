@@ -126,7 +126,6 @@ with st.spinner(f"Loading {current_page}..."):
         st.header("📰 Market News & Recommendations")
         st.info("Coming soon — stay tuned!")
 
-            
 
 # --- Hide footer ---
 st.markdown('<style>footer {visibility: hidden;}</style>', unsafe_allow_html=True)

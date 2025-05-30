@@ -12,22 +12,31 @@ prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            """You are an assistant for question-answering tasks.
-            You're a skilled communicator with a knack for turning complex information into clear and concise responses.\n
-            Synthesize the retrieved information into a concise and coherent response based on the user question.\n
-            Detail the response when the user asks you to do it, and provide the source of the information.\n
-            If you are not able to retrieve the information then respond with "I\'m sorry, I couldn\'t find the information 
-            you\'re looking for.""",),
+            """You are a financial assistant that provides accurate and relevant answers based only on the retrieved documents.
+
+            Use the provided `context` to generate a clear and informative response that matches the specified `topic`. 
+            Do not make up information or speculate beyond the documents.
+
+            If the context does not include sufficient information to answer the user's question, respond with:
+            > "I'm sorry, I couldn't find enough information to answer that question based on the current data."""),
+            
             (
             "human",
             """ 
-            Question: {question} 
-            Context: {context}  
+                Task:
+                Write a complete and helpful response based strictly on the context and aligned with the topic. Use clear, professional language. If the topic is:
+                - **stocks** → summarize stock data or performance.
+                - **economy** → explain macroeconomic data or events.
+                - **news** → summarize recent relevant headlines.
+                - **recommendation** → analyze stock trends (e.g. rising/falling prices, high/low volumes, recent gains or stability), and based on the context, suggest whether a stock appears to be a good investment. Provide reasoning using actual numbers (e.g. “This stock gained 5% today and shows strong volume, which indicates investor confidence”).
+                topic: {topic}
+                user question: {question} 
+                context: {context}  
             """
         ),
 ]
 )
 
-generative_llm= ChatGoogleGenerativeAI(model=model_name, temperature=0.2)
+generative_llm= ChatGoogleGenerativeAI(model=model_name, temperature=0)
 
 generation_chain= prompt | generative_llm | StrOutputParser()

@@ -6,7 +6,7 @@ import os
 
 from pathlib import Path
 import sys
-sys.path.insert(0, str(Path(os.getcwd()) / '..' / '..'/ '..'))
+sys.path.insert(0, str(Path(os.path.dirname(__file__)) / '..' / '..'/ '..'))
 from rag.rag_system import create_workflow
 
 torch.classes.__path__ = []
@@ -14,21 +14,19 @@ torch.classes.__path__ = []
 st.set_page_config(page_title="StockWise", page_icon="📈", layout="centered")
 st.header("💬 AI Chat Assistant")
 
-# st.subheader("Ask questions about Tunisian Stock Market trends")
-
 
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "assistant", "content": "Ask questions about Tunisian Stock Market trends 📈"}]
 
-if "pdf_tool" not in st.session_state:
-    st.session_state.pdf_tool = None 
-
 if "agents" not in st.session_state:
-    st.session_state.agents = None    
+    st.session_state.agents = None
+
+if st.session_state.agents is None:
+    st.session_state.agents = create_workflow()
 
 
 def reset_chat():
-    st.session_state.messages = [{"role": "assistant", "content": "Let's start chatting! 👇"}]
+    st.session_state.messages = [{"role": "assistant", "content": "Ask questions about Tunisian Stock Market trends 📈"}]
     gc.collect()
 
 
@@ -49,16 +47,15 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Accept user input
-if prompt := st.chat_input("Ask a question about Tunisian stock market and related news..."):
+if prompt := st.chat_input("Ask about Tunisian stocks and related news"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    if st.session_state.agents is None:
-        st.session_state.agents = create_workflow()
-        print("Agents created")    
+    # if st.session_state.agents is None:
+    #     st.session_state.agents = create_workflow() 
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
