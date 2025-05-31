@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 @patch("src.handlers.scaler_handler.save_scaler")
 @patch("utils.train_test_utils.train_model")
 @patch("dotenv.load_dotenv")
-@patch.dict(os.environ, {"WINDOW_SIZE": "5", "MODEL_NAME": "LSTM"})
+@patch.dict(os.environ, {"WINDOW_SIZE": "5", "MODEL_NAME": "LSTM", "MODEL_LOCATION": "LOCAL"})
 def test_train_function(
     mock_dotenv, mock_train_model, mock_save_scaler, mock_get_scaler,
     mock_save_model, mock_get_model, mock_read_csv, mock_subprocess_run,
@@ -51,7 +51,7 @@ def test_train_function(
     # --- Assertions ---
     mock_dotenv.assert_called()
     mock_read_csv.assert_called_once()
-    mock_get_model.assert_called_once_with("AAPL", "LSTM")
+    mock_get_model.assert_called_once_with("AAPL", "LSTM", "LOCAL")
     mock_train_model.assert_called_once()
     mock_save_model.assert_called_once()
     mock_save_scaler.assert_called_once()
