@@ -83,10 +83,12 @@ def train(models_dictionary: Dict[str, tuple[IModel, pd.DataFrame | np.ndarray, 
     return new_scaler_dict
 
 def predict(model: IModel, dataset: np.ndarray, scaler: MinMaxScaler, num_days: int, window_size: int) -> np.ndarray:
-    last_n_days = scaler.transform(dataset[:-window_size])
+    last_n_days = scaler.transform(dataset[-window_size: ]).flatten()
     output = np.array([])
     for i in range(num_days):
-        predicted_value = model.predict(last_n_days)
+        print(f'output: {output}, length: {output.__len__()}')
+        print(f'last {window_size} days: {last_n_days}, length: {last_n_days.__len__()}')
+        predicted_value = model.predict(last_n_days.reshape(1,-1))
         transformed_predicted_value = scaler.inverse_transform(predicted_value)
         last_n_days = np.delete(last_n_days, 0)
         last_n_days = np.append(last_n_days, predicted_value)

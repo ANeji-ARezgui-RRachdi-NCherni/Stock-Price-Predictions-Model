@@ -16,7 +16,7 @@ class GRUModel(IModel):
         print(f"features shape: {features.shape}")
         print(f"targets shape: {targets.shape}")
         self.model.fit(x=features, y=targets, batch_size=32, epochs=40, verbose=1)
-        self.__last_trained_date = max(last_trained_date, self.__last_trained_date)
+        self.last_trained_date = max(last_trained_date, self.last_trained_date) if self.last_trained_date != None else last_trained_date
     
     def predict(self, input_data):
         print(f"input shape: {input_data.shape}")

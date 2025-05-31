@@ -26,6 +26,7 @@ def train():
 
     WINDOW_SIZE = int(os.environ.get("WINDOW_SIZE")) 
     MODEL_NAME = os.environ.get("MODEL_NAME")
+    MODEL_LOCATION = os.environ.get("MODEL_LOCATION")
 
     stocks_list = [f.replace(".csv.dvc", "") for f in os.listdir(DATA_DIR) if f.endswith(".csv.dvc")]
     logger.info(f"found {len(stocks_list)} stocks")
@@ -40,8 +41,8 @@ def train():
             logger.warning(f"{stock}.csv not found")
             continue
         df = pd.read_csv(csv_file, sep=";")
-        model = get_or_create_model(stock, MODEL_NAME)
-        scaler = get_or_create_scaler(stock)
+        model = get_or_create_model(stock, MODEL_NAME, MODEL_LOCATION)
+        scaler = get_or_create_scaler(stock, MODEL_LOCATION)
         last_trained_date = model.get_last_trained_date()
         logger.info(f"model's old last trained date: {last_trained_date if last_trained_date else 'Never trained before'}")
         df["date"] = pd.to_datetime(df["date"])
@@ -63,8 +64,8 @@ def train():
         full_model_name = f"{MODEL_NAME} {stock}"
         scaler = train_model(model, full_model_name, train_df, scaler, WINDOW_SIZE, new_last_trained_date)
         logger.info(f"Training {stock} model done, saving model and scaler")
-        save_model(model)
-        save_scaler(scaler)
+        save_model(model, MODEL_LOCATION, stock)
+        save_scaler(scaler, MODEL_LOCATION, stock)
     logger.info("Training script completed successfully")
 
 if __name__ == "__main__":
