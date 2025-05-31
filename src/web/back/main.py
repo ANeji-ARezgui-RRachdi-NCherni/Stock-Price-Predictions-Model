@@ -13,7 +13,6 @@ from dateutil.relativedelta import relativedelta
 load_dotenv()
 
 MODEL_LOCATION = os.environ.get("MODEL_LOCATION")
-WINDOW_SIZE = int(os.environ.get("WINDOW_SIZE")) 
 
 app = FastAPI()
 
@@ -37,6 +36,8 @@ def list_companies():
 
 @app.get("/stock/{company}")
 def get_stock(company: str):
+    WINDOW_SIZE = int(os.environ.get("WINDOW_SIZE")) 
+    
     dvc_file = os.path.join(DATA_DIR, f"{company}.csv.dvc")
     if not os.path.exists(dvc_file):
         raise HTTPException(status_code=404, detail="Company not found")
