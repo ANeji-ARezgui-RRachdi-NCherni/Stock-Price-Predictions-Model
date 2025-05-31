@@ -37,3 +37,5 @@ dependencies:
       - azure-ai-ml
       - azure-identity
       - joblib
+      - starlette>=0.27.0
+      - httpx>=0.23.1
