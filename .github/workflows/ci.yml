@@ -41,8 +41,6 @@ jobs:
         source $HOME/miniconda/bin/activate
         conda activate Stock_Price_Prediction
 
-        pip install --upgrade "starlette>=0.27.0,<0.28.0" "httpx>=0.23.1,<0.24.0"
-
         # Set PYTHONPATH to include the project root
         export PYTHONPATH=$PYTHONPATH:$(pwd)
         
