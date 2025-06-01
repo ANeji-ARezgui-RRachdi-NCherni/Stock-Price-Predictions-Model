@@ -12,6 +12,9 @@ env:
   KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
   MODEL_NAME: ${{ vars.MODEL_NAME }}
   WINDOW_SIZE: ${{ vars.WINDOW_SIZE }}
+  AZURE_RESOURCE_GROUP:   ${{ secrets.AZURE_RESOURCE_GROUP }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  AZURE_ML_WORKSPACE:     ${{ secrets.AZURE_ML_WORKSPACE }}
 
 jobs:
   train-model:
@@ -53,6 +56,10 @@ jobs:
 
       - name: Run Training Job
         shell: bash -l {0}
+        env:
+          AZURE_RESOURCE_GROUP:   ${{ secrets.AZURE_RESOURCE_GROUP }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_ML_WORKSPACE:     ${{ secrets.AZURE_ML_WORKSPACE }}
         run: |
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction
@@ -68,15 +75,3 @@ jobs:
           # Run the training script
           echo "Training model on Azure ML"
           python -m scripts.train_model
-
-      - name: Deploy to Azure ML
-        shell: bash -l {0}
-        env:
-          AZURE_RESOURCE_GROUP:   ${{ secrets.AZURE_RESOURCE_GROUP }}
-          AZURE_ML_WORKSPACE:     ${{ secrets.AZURE_ML_WORKSPACE }}
-          MODEL_NAME:             ${{ vars.MODEL_NAME }}
-        run: |
-          source $HOME/miniconda/bin/activate
-          conda env update --file environment.yml --name Stock_Price_Prediction
-          conda activate Stock_Price_Prediction
-          python -m scripts.deploy_model

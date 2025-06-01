@@ -1,5 +1,13 @@
+"""
+We no longer deploy our model to an Azure ML ManagedOnlineEndpoint,
+because FastAPI loads the .pkl and serves predictions itself.
+
+Left here in case you ever want to re-enable Azure ML endpoint hosting,
+but it is not needed right now.
+"""
+
 from dotenv import load_dotenv
-load_dotenv() 
+load_dotenv()
 import os
 from azure.ai.ml import MLClient
 from azure.identity import DefaultAzureCredential
