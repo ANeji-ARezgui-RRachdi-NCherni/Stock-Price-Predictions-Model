@@ -64,7 +64,7 @@ def train():
             train_df = df.tail(WINDOW_SIZE + num_train_rows).copy()
             # if the model is already pre-trained on old data we evaluate the model predictions of the days post last trained date
             # based on the newly added data
-            logger.info(f"evaluating {full_model_name} model on dates from {train_df[-num_train_rows]["date"]} to {train_df[-1]["date"]} using MAPE")
+            logger.info(f"evaluating {full_model_name} model on dates from {train_df[-num_train_rows]['date']} to {train_df[-1]['date']} using MAPE")
             train_df = train_df["cloture"].values.reshape(-1,1)
             model_evaluation = evaluate({full_model_name: (model, [], train_df)}, ValidationMetricEnum.MAPE, {full_model_name: scaler})
             if (model_evaluation[full_model_name] >= MODEL_EVAL_THRESHHOLD):

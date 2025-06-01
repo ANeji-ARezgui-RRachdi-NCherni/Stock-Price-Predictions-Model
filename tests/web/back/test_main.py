@@ -52,7 +52,9 @@ def test_get_stock_valid(mock_dotenv, mock_subprocess, mock_read_csv, mock_exist
     assert data["data"][0]["cloture"] == 100
 
 @patch("src.web.back.main.os.path.exists")
-def test_get_stock_not_found(mock_exists):
+@patch("dotenv.load_dotenv")
+@patch.dict(os.environ, {"WINDOW_SIZE": "1", "MODEL_NAME": "LSTM", "MODEL_LOCATION": "LOCAL"})
+def test_get_stock_not_found(mock_dotenv, mock_exists):
     mock_exists.return_value = False
     
     with TestClient(app) as client:
