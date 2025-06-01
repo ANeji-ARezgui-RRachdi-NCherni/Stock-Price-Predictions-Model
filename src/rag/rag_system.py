@@ -1,9 +1,8 @@
 from typing import List, TypedDict
 from langgraph.graph import StateGraph, END,  START
 from langchain_core.documents import Document
-from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-
+import time
 import os
 from dotenv import load_dotenv
 from .agents import *
@@ -32,6 +31,20 @@ class State(TypedDict):
 
 
 
+def log_execution_time(func):
+    """
+    Decorator to log the execution time of a function.
+    """
+    def wrapper(*args, **kwargs):
+        start_time = time.time()  # Record the start time
+        result = func(*args, **kwargs)
+        end_time = time.time()  # Record the end time
+        execution_time = end_time - start_time
+        print(f"Execution time for {func.__name__}: {execution_time:.4f} seconds")
+        return result
+    return wrapper
+
+@log_execution_time
 def check_topic_relevency(state:State):
     """
     Check if the question is relevant to the RAG system.
@@ -42,7 +55,6 @@ def check_topic_relevency(state:State):
     Returns:
         str: Next node to call
     """
-
     question = state["question"]
     source = topic_checker.invoke({"question": question})
     if source.datasource == "off_topic":
@@ -50,6 +62,7 @@ def check_topic_relevency(state:State):
     elif source.datasource == "rag":
         return "rag"
 
+@log_execution_time
 def classify_question(state:State):
     """
     Classify the question into a topic.
@@ -64,6 +77,7 @@ def classify_question(state:State):
     topic = input_classifer.invoke({"user_input": question})
     return {"topic": topic.topic, "question": question}
 
+@log_execution_time
 def embed_question(state:State):
     """
     Embed the question using the embedding model.
@@ -79,6 +93,7 @@ def embed_question(state:State):
     q_embed = query_embeddings.embed_query(text=question)
     return {"embedded_question": q_embed, "question": question}
 
+@log_execution_time
 def retrieve(state:State):
     """
     Retrieve Documents
@@ -89,8 +104,8 @@ def retrieve(state:State):
     Returns:
         state(dict): The state of the graph with the retrieved documents in a new key.    
     """
-    embedded_question= state["embedded_question"]
-    question= state["question"]
+    embedded_question = state["embedded_question"]
+    question = state["question"]
     topic = state["topic"]
     vector_store = get_pinecone_vector_store(index_name)
 
@@ -103,21 +118,24 @@ def retrieve(state:State):
 
     documents = vector_store.similarity_search_by_vector_with_score(
         embedding=embedded_question,
-        k= 20,
+        k= 7,
         filter=filter
-        )
-    documents = [d[0] for d in documents if d[1] > 0.4]  # Filter out low similarity scores
+    )
     return {"documents": documents ,  "question": question }
 
+@log_execution_time
 def transform_query(state:State):
+    """
+    Rewrite the question for better understanding or relevance.
+    """
+    print("rewriting question")
+    better_question = question_rewriter.invoke({"question": state["question"]})
+    return {"question": better_question}
 
-        print("rewriting question")
-        better_question = question_rewriter.invoke({"question": state["question"]})
-        return ({"question": better_question})
-
+@log_execution_time
 def off_topic(state:State):
     """
-    Resonse for user questions that are off topic.
+    Response for user questions that are off topic.
 
     Returns:
         state (dict): returns the state with a response indicating the question is off topic.
@@ -125,38 +143,31 @@ def off_topic(state:State):
     response = "I'm sorry, I only answer questions related to the Tunisian stock market and related news."
     return {"generation" : response}
 
-
+@log_execution_time
 def generate(state:State):
-        """
-        Generate a response based on the question and documents.
+    """
+    Generate a response based on the question and documents.
 
-        Args:
-            state (State): The state of the graph.
+    Args:
+        state (State): The state of the graph.
 
-        Returns:
-            state (dict): The state of the graph with the generated response in a new key.
-        """
-        question = state["question"]
-        documents = state["documents"]
-        topic = state["topic"]
-        
-        match topic:
-            case "news":
-                agent = NewsAgent()
-
-            case "stocks":
-                agent = StockAgent()
-
-            case "recommendation":
-                agent = RecommenderAgent()
-
-            case "general":
-                agent = RecommenderAgent()
+    Returns:
+        state (dict): The state of the graph with the generated response in a new key.
+    """
+    question = state["question"]
+    top_contexts = state["documents"]
+    topic = state["topic"]
+    match topic:
+        case "news":
+            agent = NewsAgent()
+        case "stocks":
+            agent = StockAgent()
+        case "recommendation":
+            agent = RecommenderAgent()
                 
-        generation_chain = agent.get_decision_chain()
-        top_contexts = [(doc.page_content, doc.metadata['link'], doc.metadata['source']) for doc in documents]
-        generation = generation_chain.invoke({"question": question, "context": top_contexts, "topic" : state["topic"]})
-        return {"generation": generation, "question": question , "documents": documents }
+    generation_chain = agent.get_decision_chain()
+    generation = generation_chain.invoke({"question": question, "context": top_contexts, "topic" : state["topic"]})
+    return {"generation": generation, "question": question}
 
 
 def create_agents_graph():

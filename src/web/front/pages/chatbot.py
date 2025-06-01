@@ -4,6 +4,7 @@ import gc
 import torch
 import os
 
+
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(os.path.dirname(__file__)) / '..' / '..'/ '..'))
@@ -21,8 +22,6 @@ if "messages" not in st.session_state:
 if "agents" not in st.session_state:
     st.session_state.agents = None
 
-if st.session_state.agents is None:
-    st.session_state.agents = create_agents_graph()
 
 
 def reset_chat():
@@ -54,16 +53,14 @@ if prompt := st.chat_input("Ask about Tunisian stocks and related news"):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # if st.session_state.agents is None:
-    #     st.session_state.agents = create_workflow() 
+    if st.session_state.agents is None:
+        st.session_state.agents = create_agents_graph() 
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
-        full_response = "" 
-
-        # Get the complete response first
-        with st.spinner("Thinking..."):
+        full_response = ""
+        with st.spinner("Thinking...",show_time=True):
             inputs = {"question": prompt}
             for output in st.session_state.agents.stream(inputs):
                 for key, value in output.items():
@@ -81,7 +78,9 @@ if prompt := st.chat_input("Ask about Tunisian stocks and related news"):
             message_placeholder.markdown(full_response + "▌")
             time.sleep(0.20)
 
-        message_placeholder.markdown(full_response)
+        message_placeholder.markdown(full_response) 
+            
+                
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 

@@ -4,7 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 class StockAgent(IGenerator):
     def __init__(self):
-        self.prompt = self.__create_prompt()
+        self.prompt = self.create_prompt()
         super().__init__(temperature=0)
 
     
@@ -25,30 +25,41 @@ class StockAgent(IGenerator):
                 [
                     (
                         "system",
-                        """You are a financial assistant that provides accurate and relevant answers based only on the retrieved documents.
+                        """You are a financial assistant specializing in analyzing stock data and providing insightful summaries. 
+                        Your task is to carefully analyze the provided stock data, extract key metrics and trends, and present your findings in a clear, concise, and structured format.
 
-                        Use the provided `context` to generate a clear and informative response that matches the specified `topic`. 
-                        Do not make up information or speculate beyond the documents.
+                            # Steps
 
-                        If the context does not include sufficient information to answer the user's question, respond with:
-                        > "I'm sorry, I couldn't find enough information to answer that question based on the current data."""),
+                            1. Assess the stock data provided, including price movements, volume, market trends, and other relevant financial indicators.
+                            2. Identify significant patterns such as price fluctuations, support/resistance levels, volume changes, or notable news impacting the stock.
+                            3. Summarize these insights clearly, highlighting both short-term and long-term outlooks if applicable.
+                            4. Create a structured table summarizing essential data points such as stock ticker, current price, change percentage, volume, market cap, P/E ratio, and any other relevant financial metrics.
+
+                            # Output Format
+
+                            - A brief textual summary paragraph or two explaining key insights.
+                            - If values are involved, make sure to respond with perfect values present in context. Do not make up values.
+                            - A neatly formatted table containing summarized stock data with columns like:
+                            - Stock Ticker
+                            - Current Price
+                            - Change (%)
+                            - Volume
+                            - Market Cap
+                            - P/E Ratio
+                            - Other relevant metrics if provided
+
+                            Ensure that all information is accurate and clearly presented for ease of understanding by users seeking financial insights."""),
                         
                         (
                         "human",
                         """ 
-                            Task:
-                            Write a complete and helpful response based strictly on the context and aligned with the topic. Use clear, professional language. If the topic is:
-                            - **stocks** → summarize stock data or performance.
-                            - **economy** → explain macroeconomic data or events.
-                            - **news** → summarize recent relevant headlines.
-                            - **recommendation** → analyze stock trends (e.g. rising/falling prices, high/low volumes, recent gains or stability), and based on the context, suggest whether a stock appears to be a good investment. Provide reasoning using actual numbers (e.g. “This stock gained 5% today and shows strong volume, which indicates investor confidence”).
-                            topic: {topic}
                             user question: {question} 
                             context: {context}  
                         """
                     ),
             ]
             )
+        print("Stocks Agent Prompt Created")
         return prompt
 
     

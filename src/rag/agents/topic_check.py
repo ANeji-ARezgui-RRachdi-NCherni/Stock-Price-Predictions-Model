@@ -24,10 +24,12 @@ llm = ChatGoogleGenerativeAI(model=model_name, temperature=0)
 structured_llm_router = llm.with_structured_output(TopicCheck)
 
 # Prompt
-system = """You are an expert at routing a user question to RAG or decide if it is not relevent.
+system = """
+You are an expert at routing a user question to RAG or decide if it is not relevent.
 The RAG's vectorstore contains documents related to stock data in Tunisia for different Tunisian stocks.
 The vectorstore also contains information about latetst news related to the Tunisian economy and stock market.
-Use the vectorstore for questions on these topics."""
+Use the vectorstore for questions on these topics.
+"""
 route_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system),
