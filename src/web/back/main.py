@@ -14,7 +14,7 @@ import json
 load_dotenv()
 
 MODEL_LOCATION = os.environ.get("MODEL_LOCATION") 
-DISABLE_BACKEND_CACHE = os.environ.get("DISABLE_BACKEND_CACHE") if os.environ.get("DISABLE_BACKEND_CACHE") != None else True
+DISABLE_BACKEND_CACHE = os.environ.get("DISABLE_BACKEND_CACHE").lower() == "true" if os.environ.get("DISABLE_BACKEND_CACHE") != None else True
 BACKEND_CACHE_CONNECTION_STRING = os.environ.get("BACKEND_CACHE_CONNECTION_STRING") if os.environ.get("BACKEND_CACHE_CONNECTION_STRING") != None else ""
 BACKEND_CACHE_EXPIRATION_TIME = int(os.environ.get("BACKEND_CACHE_EXPIRATION_TIME")) if os.environ.get("BACKEND_CACHE_EXPIRATION_TIME") != None else 0
 
