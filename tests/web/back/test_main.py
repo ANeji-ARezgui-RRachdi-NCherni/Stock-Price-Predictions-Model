@@ -16,7 +16,8 @@ client = TestClient(app)
 def test_get_companies(mock_listdir):
     mock_listdir.return_value = ["AB.csv.dvc", "AL.csv.dvc"]
     
-    response = client.get("/companies")
+    with TestClient(app) as client:
+        response = client.get("/companies")
     
     assert response.status_code == 200
     assert response.json() == ["AB", "AL"]
@@ -41,9 +42,10 @@ def test_get_stock_valid(mock_dotenv, mock_subprocess, mock_read_csv, mock_exist
     model = LSTMModel("AB")
     model.last_trained_date = max(pd.to_datetime(mock_df["date"], format='%Y-%m-%d', dayfirst=True))
     mock_get_model.return_value = model
-
-    response = client.get("/stock/AB")
-
+    
+    with TestClient(app) as client:
+        response = client.get("/stock/AB")
+    
     assert response.status_code == 200
     data = response.json()
     assert "columns" in data
@@ -54,5 +56,8 @@ def test_get_stock_valid(mock_dotenv, mock_subprocess, mock_read_csv, mock_exist
 @patch("src.web.back.main.os.path.exists")
 def test_get_stock_not_found(mock_exists):
     mock_exists.return_value = False
-    response = client.get("/stock/UNKNOWN")
+    
+    with TestClient(app) as client:
+        response = client.get("/stock/UNKNOWN")
+    
     assert response.status_code == 404
