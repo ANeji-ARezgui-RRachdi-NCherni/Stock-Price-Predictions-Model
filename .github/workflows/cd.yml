@@ -1,0 +1,101 @@
+name: Deployment to Azure App Service
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & Push Backend Image
+        shell: bash -l {0}
+        run: |
+          # Tag with the current Git SHA for uniqueness
+          IMAGE_BACKEND=ramirachdi/stock-backend:${{ github.sha }}
+
+          # Build from src/web/back/Dockerfile
+          docker build \
+            -f src/web/back/Dockerfile \
+            -t $IMAGE_BACKEND \
+            .
+
+          # Push to Docker Hub
+          docker push $IMAGE_BACKEND
+
+          # Expose IMAGE_BACKEND to subsequent steps
+          echo "IMAGE_BACKEND=$IMAGE_BACKEND" >> $GITHUB_ENV
+
+      - name: Build & Push Frontend Image
+        shell: bash -l {0}
+        run: |
+          IMAGE_FRONTEND=ramirachdi/stock-frontend:${{ github.sha }}
+
+          docker build \
+            -f src/web/front/Dockerfile \
+            -t $IMAGE_FRONTEND \
+            .
+
+          docker push $IMAGE_FRONTEND
+
+          echo "IMAGE_FRONTEND=$IMAGE_FRONTEND" >> $GITHUB_ENV
+
+      - name: Check Azure CLI version
+        run: az --version
+
+      - name: Authenticate with Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Backend to Azure App Service
+        shell: bash -l {0}
+        env:
+          AZURE_RESOURCE_GROUP:   ${{ secrets.AZURE_RESOURCE_GROUP }}
+          AZURE_BACKEND_APP_NAME: ${{ secrets.AZURE_BACKEND_APP_NAME }}
+          IMAGE_BACKEND:          ${{ env.IMAGE_BACKEND }}
+        run: |
+          echo "Configuring App Service '$AZURE_BACKEND_APP_NAME' to use image $IMAGE_BACKEND"
+          az webapp config container set \
+            --name $AZURE_BACKEND_APP_NAME \
+            --resource-group $AZURE_RESOURCE_GROUP \
+            --docker-custom-image-name $IMAGE_BACKEND \
+            --docker-registry-server-url https://index.docker.io
+
+          echo "Restarting backend App Service..."
+          az webapp restart \
+            --name $AZURE_BACKEND_APP_NAME \
+            --resource-group $AZURE_RESOURCE_GROUP
+
+      - name: Deploy Frontend to Azure App Service
+        shell: bash -l {0}
+        env:
+          AZURE_RESOURCE_GROUP:    ${{ secrets.AZURE_RESOURCE_GROUP }}
+          AZURE_FRONTEND_APP_NAME: ${{ secrets.AZURE_FRONTEND_APP_NAME }}
+          IMAGE_FRONTEND:          ${{ env.IMAGE_FRONTEND }}
+        run: |
+          echo "Configuring App Service '$AZURE_FRONTEND_APP_NAME' to use image $IMAGE_FRONTEND"
+          az webapp config container set \
+            --name $AZURE_FRONTEND_APP_NAME \
+            --resource-group $AZURE_RESOURCE_GROUP \
+            --docker-custom-image-name $IMAGE_FRONTEND \
+            --docker-registry-server-url https://index.docker.io
+
+          echo "Restarting frontend App Service..."
+          az webapp restart \
+            --name $AZURE_FRONTEND_APP_NAME \
+            --resource-group $AZURE_RESOURCE_GROUP
+
+      - name: Deployment Complete
+        run: echo "Backend and Frontend images built, pushed, and deployed successfully!"
