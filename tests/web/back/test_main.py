@@ -10,8 +10,6 @@ import pandas as pd
 from src import LSTMModel
 
 
-client = TestClient(app)
-
 @patch("src.web.back.main.os.listdir")
 def test_get_companies(mock_listdir):
     mock_listdir.return_value = ["AB.csv.dvc", "AL.csv.dvc"]
