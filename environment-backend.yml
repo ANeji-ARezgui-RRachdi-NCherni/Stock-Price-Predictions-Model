@@ -1,0 +1,14 @@
+name: stock-backend
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pandas
+  - dvc[azure]
+  - fastapi=0.100.0
+  - uvicorn[standard]=0.22.0
+  - python-dotenv
+  - pip
+  - pip:
+      - orjson
+      - dvc-azure

@@ -1,0 +1,14 @@
+name: stock-frontend
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - streamlit
+  - pandas
+  - requests
+  - requests_cache
+  - plotly
+  - python-dotenv
+  - pip
+  - pip:
+      - orjson
