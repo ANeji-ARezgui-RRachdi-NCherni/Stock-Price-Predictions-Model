@@ -16,8 +16,9 @@ COPY . /app
 EXPOSE 8501
 
 # Default environment variables (to be overridden in Azure)
-ENV BACKEND_URL="" 
+ENV BACKEND_URL=""
 ENV FRONTEND_CACHE_EXPIRATION_TIME="300"
+ENV WINDOW_SIZE=""
 
 SHELL ["/bin/bash", "-lc"]
 

@@ -21,8 +21,21 @@ COPY src/web/back/docker-entrypoint-back.sh /app/docker-entrypoint-back.sh
 RUN chmod +x /app/docker-entrypoint-back.sh
 
 # Default environment variables (to be overridden in Azure)
-ENV AZURE_STORAGE_ACCOUNT_NAME=""
-ENV AZURE_STORAGE_ACCOUNT_KEY=""
+ENV AZURE_STORAGE_CONNECTION_STRING=""
+ENV LANGSMITH_API_KEY=""
+ENV GOOGLE_API_KEY=""
+ENV GOOGLE_API_KEY_1=""
+ENV LLM_MODEL=""
+ENV EMBEDDING_MODEL="models/model_name"
+ENV TAVILY_API_KEY=""
+ENV USER_AGENT=""
+ENV PINECONE_API_KEY=""
+ENV INDEX_NAME=""
+ENV KERAS_BACKEND="torch"
+ENV BACKEND_CACHE_EXPIRATION_TIME=""
+ENV DISABLE_BACKEND_CACHE="false"
+ENV FRONTEND_URL=""
+
 
 SHELL ["/bin/bash", "-lc"]
 
