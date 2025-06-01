@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -e
 
 source /opt/conda/etc/profile.d/conda.sh
