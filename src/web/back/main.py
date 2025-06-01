@@ -83,7 +83,7 @@ def get_stock(company: str):
         res = {"columns": df.columns.tolist(), "data": df.to_dict(orient="records")}
         if (DISABLE_BACKEND_CACHE == False and cacheService != None):
             cacheService.set(key, json.dumps(res))
-        return 
+        return res
     except subprocess.CalledProcessError as e:
         error_message = f"Failed to pull data with DVC. stdout: {e.stdout.strip() if e.stdout else ''}, stderr: {e.stderr.strip() if e.stderr else ''}"
         raise HTTPException(status_code=500, detail=error_message)
