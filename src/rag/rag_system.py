@@ -6,7 +6,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 import os
 from dotenv import load_dotenv
-from .graph_nodes import *
+from .agents import *
 from .pinecone_vector_store import get_pinecone_vector_store
 
 
@@ -32,6 +32,24 @@ class State(TypedDict):
 
 
 
+def check_topic_relevency(state:State):
+    """
+    Check if the question is relevant to the RAG system.
+
+    Args:
+        state (dict): The current graph state
+
+    Returns:
+        str: Next node to call
+    """
+
+    question = state["question"]
+    source = topic_checker.invoke({"question": question})
+    if source.datasource == "off_topic":
+        return "off_topic"
+    elif source.datasource == "rag":
+        return "rag"
+
 def classify_question(state:State):
     """
     Classify the question into a topic.
@@ -44,7 +62,7 @@ def classify_question(state:State):
     """
     question = state["question"]
     topic = input_classifer.invoke({"user_input": question})
-    return {"topic": topic, "question": question}
+    return {"topic": topic.topic, "question": question}
 
 def embed_question(state:State):
     """
@@ -75,6 +93,7 @@ def retrieve(state:State):
     question= state["question"]
     topic = state["topic"]
     vector_store = get_pinecone_vector_store(index_name)
+
     if topic == "news":
         filter = {"source": "news"}
     elif topic == "stocks":
@@ -88,7 +107,6 @@ def retrieve(state:State):
         filter=filter
         )
     documents = [d[0] for d in documents if d[1] > 0.4]  # Filter out low similarity scores
-    print(f"Retrieved {len(documents)} documents")
     return {"documents": documents ,  "question": question }
 
 def transform_query(state:State):
@@ -108,24 +126,6 @@ def off_topic(state:State):
     return {"generation" : response}
 
 
-def route_question(state:State):
-    """
-    Route question to RAG or off topic if it is not relevent.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        str: Next node to call
-    """
-
-    question = state["question"]
-    source = question_router.invoke({"question": question})
-    if source.datasource == "off_topic":
-        return "off_topic"
-    elif source.datasource == "vectorstore":
-        return "vectorstore"
-
 def generate(state:State):
         """
         Generate a response based on the question and documents.
@@ -138,12 +138,28 @@ def generate(state:State):
         """
         question = state["question"]
         documents = state["documents"]
+        topic = state["topic"]
+        
+        match topic:
+            case "news":
+                agent = NewsAgent()
+
+            case "stocks":
+                agent = StockAgent()
+
+            case "recommendation":
+                agent = RecommenderAgent()
+
+            case "general":
+                agent = RecommenderAgent()
+                
+        generation_chain = agent.get_decision_chain()
         top_contexts = [(doc.page_content, doc.metadata['link'], doc.metadata['source']) for doc in documents]
         generation = generation_chain.invoke({"question": question, "context": top_contexts, "topic" : state["topic"]})
         return {"generation": generation, "question": question , "documents": documents }
 
 
-def create_workflow():
+def create_agents_graph():
 
     workflow = StateGraph(State)
 
@@ -156,18 +172,19 @@ def create_workflow():
 
     workflow.add_conditional_edges(
         START,
-        route_question,
+        check_topic_relevency,
             {
                 "off_topic": "off_topic",
-                "vectorstore": "classify_question",
+                "rag": "classify_question",
             }   
         )    
-    workflow.add_edge("classify_question", "embed_question")
     workflow.add_edge("off_topic", END)
+    workflow.add_edge("classify_question", "embed_question")
     workflow.add_edge("embed_question","retrieve")
-    workflow.add_edge("retrieve", "generate")
+    workflow.add_edge("retrieve","generate")
     workflow.add_edge("generate",END )
 
     app = workflow.compile()
 
     return app
+

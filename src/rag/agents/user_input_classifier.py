@@ -11,25 +11,27 @@ model_name = os.getenv('LLM_MODEL')
 api_key= os.getenv("GOOGLE_API_KEY_1")
 
 # Data model
-class RouteQuery(BaseModel):
+class ClassifyInput(BaseModel):
     """Classify user input into the most relevant topic."""
 
-    topic: Literal["news", "stocks", "recommendation", "economy"] = Field(
+    topic: Literal["news", "stocks", "recommendation","general"] = Field(
         ...,
-        description="Given a user input choose the topic of the question. The topics are: news, stocks, recommendation, economy."
+        description="Given a user input choose the topic of the question. The topics are: news, stocks, recommendation or general."
     )
 
 
 # LLM with function call
 llm = ChatGoogleGenerativeAI(model=model_name, temperature=0, google_api_key= api_key)
-structured_llm_router = llm.with_structured_output(RouteQuery)
+structured_llm_router = llm.with_structured_output(ClassifyInput)
 
 # Prompt
-system = """Classify the user input into one of the following topics:
+system = """Classify the following user input into one of the following topics:
 - stocks
 - economy
 - news
 - recommendation
+
+Respond only with the topic name.
 """
 classify_user_input = ChatPromptTemplate.from_messages(
     [

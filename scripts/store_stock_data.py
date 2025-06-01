@@ -94,7 +94,7 @@ def process_stock_data(df_list:List [pd.DataFrame]) -> List[str]:
         stock_data: List of Documents.
     """
     text_splitter = RecursiveCharacterTextSplitter(
-            separators=["\n"],
+            separators=[". "],
             chunk_size=32768,  #power of 2
             chunk_overlap=0,      
         )
@@ -106,7 +106,7 @@ def process_stock_data(df_list:List [pd.DataFrame]) -> List[str]:
         df = df.copy()    
         df['text']= df.apply(lambda row: f"Stock {row['stock']} on date {row['date']}, opening price {row['ouverture']:.2f}, closing price {row['cloture']:.2f}, volume {row['volume']:,.2f}.", axis=1)
         stock_data += df['text'].tolist()
-        stock_data = "\n".join(stock_data)
+        stock_data = " ".join(stock_data)
         if len(stock_data) > 40000: # pinecone limit is 40KB metadata size per document 
             stock_data = text_splitter.split_text(stock_data)
             document1 = Document(page_content=stock_data[0], metadata={"title":stock ,"date":df['date'].iloc[-1], "link": STOCK_DATA_URL,"source": "stock_data"})
