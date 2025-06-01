@@ -11,7 +11,9 @@ from src import LSTMModel
 
 
 @patch("src.web.back.main.os.listdir")
-def test_get_companies(mock_listdir):
+@patch("dotenv.load_dotenv")
+@patch.dict(os.environ, {"WINDOW_SIZE": "1", "MODEL_NAME": "LSTM", "MODEL_LOCATION": "LOCAL", "DISABLE_BACKEND_CACHE": "true"})
+def test_get_companies(mock_dotenv, mock_listdir):
     mock_listdir.return_value = ["AB.csv.dvc", "AL.csv.dvc"]
     
     with TestClient(app) as client:
@@ -27,7 +29,7 @@ def test_get_companies(mock_listdir):
 @patch("src.web.back.main.pd.read_csv")
 @patch("src.web.back.main.subprocess.run")
 @patch("dotenv.load_dotenv")
-@patch.dict(os.environ, {"WINDOW_SIZE": "1", "MODEL_NAME": "LSTM", "MODEL_LOCATION": "LOCAL"})
+@patch.dict(os.environ, {"WINDOW_SIZE": "1", "MODEL_NAME": "LSTM", "MODEL_LOCATION": "LOCAL", "DISABLE_BACKEND_CACHE": "true"})
 def test_get_stock_valid(mock_dotenv, mock_subprocess, mock_read_csv, mock_exists, mock_predict, mock_get_scaler, mock_get_model):
     # Access mocks to avoid unused argument warnings
     _ = mock_dotenv
@@ -53,7 +55,7 @@ def test_get_stock_valid(mock_dotenv, mock_subprocess, mock_read_csv, mock_exist
 
 @patch("src.web.back.main.os.path.exists")
 @patch("dotenv.load_dotenv")
-@patch.dict(os.environ, {"WINDOW_SIZE": "1", "MODEL_NAME": "LSTM", "MODEL_LOCATION": "LOCAL"})
+@patch.dict(os.environ, {"WINDOW_SIZE": "1", "MODEL_NAME": "LSTM", "MODEL_LOCATION": "LOCAL", "DISABLE_BACKEND_CACHE": "true"})
 def test_get_stock_not_found(mock_dotenv, mock_exists):
     mock_exists.return_value = False
     
