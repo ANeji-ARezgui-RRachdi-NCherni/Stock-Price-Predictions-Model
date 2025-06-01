@@ -1,14 +1,35 @@
 name: stock-backend
 channels:
   - conda-forge
+
 dependencies:
-  - python=3.11
+  - python=3.11.0
   - pandas
-  - dvc[azure]
-  - fastapi=0.100.0
-  - uvicorn[standard]=0.22.0
-  - python-dotenv
+  - numpy
+  - scikit-learn
+  - keras
   - pip
+
   - pip:
+      - valkey
+      - "valkey[hiredis]"
+      - dvc[azure]
+      - torch
       - orjson
-      - dvc-azure
+      - fastapi==0.100.0
+      - pydantic==1.10.8
+      - uvicorn[standard]==0.22.0
+      - python-dotenv
+      - langchain
+      - langgraph
+      - langchain-community
+      - langchain-google-genai
+      - pinecone-client
+      - langchain-pinecone
+      - pinecone-notebooks
+      - chonkie
+      - markitdown
+      - azure-identity
+      - joblib
+      - starlette>=0.27.0,<0.28.0
+      - httpx>=0.23.1,<0.24.0
