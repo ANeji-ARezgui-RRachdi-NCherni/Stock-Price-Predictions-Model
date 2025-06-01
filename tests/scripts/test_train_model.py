@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 @patch("src.handlers.scaler_handler.save_scaler")
 @patch("utils.train_test_utils.train_model")
 @patch("dotenv.load_dotenv")
-@patch.dict(os.environ, {"WINDOW_SIZE": "5", "MODEL_NAME": "LSTM", "MODEL_LOCATION": "LOCAL"})
+@patch.dict(os.environ, {"WINDOW_SIZE": "5", "MODEL_NAME": "LSTM", "MODEL_LOCATION": "LOCAL", "MODEL_EVAL_THRESHHOLD": "10"})
 def test_train_function(
     mock_dotenv, mock_train_model, mock_save_scaler, mock_get_scaler,
     mock_save_model, mock_get_model, mock_read_csv, mock_subprocess_run,
