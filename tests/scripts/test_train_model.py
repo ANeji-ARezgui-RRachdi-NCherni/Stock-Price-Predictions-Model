@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-
+@patch("scripts.train_model.evaluate")
 @patch("builtins.open", new_callable=mock_open)
 @patch("os.path.exists")
 @patch("os.listdir")
@@ -24,7 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 def test_train_function(
     mock_dotenv, mock_train_model, mock_save_scaler, mock_get_scaler,
     mock_save_model, mock_get_model, mock_read_csv, mock_subprocess_run,
-    mock_join, mock_listdir, mock_exists, mock_open_file
+    mock_join, mock_listdir, mock_exists, mock_open_file, mock_evaluate
 ):
     from scripts.train_model import train
 
@@ -44,6 +44,8 @@ def test_train_function(
     dummy_scaler = MagicMock()
     mock_get_scaler.return_value = dummy_scaler
     mock_train_model.return_value = dummy_scaler
+
+    mock_evaluate.return_value = {"AAPL": 1}
 
     # --- Call the function ---
     train()
