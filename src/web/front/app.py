@@ -8,6 +8,7 @@ import plotly.express as px
 # Load environment variables
 load_dotenv()
 BACKEND_URL = os.environ.get("BACKEND_URL")
+WINDOW_SIZE = int(os.environ.get("WINDOW_SIZE"))
 
 CACHE_EXPIRATION_TIME = int(os.environ["FRONTEND_CACHE_EXPIRATION_TIME"])
 cache_session = CachedSession('cache', expire_after=CACHE_EXPIRATION_TIME)
@@ -111,12 +112,11 @@ with st.spinner(f"Loading {current_page}..."):
                 df = pd.DataFrame(res.json()["data"])
                 df["date"] = pd.to_datetime(df["date"])
                 df.set_index("date", inplace=True)
-                df_pred = df.tail(5).copy()
-                df_pred.index = pd.date_range(start=df.index[-1] + pd.Timedelta(days=1), periods=5)
-                df_pred["cloture"] = df["cloture"].iloc[-1] * (1 + pd.Series([0.01, -0.005, 0.008, 0.002, -0.003]))
-                fig = px.line(title=f"{company}: Actual vs Predicted")
+                df_pred = df.tail(WINDOW_SIZE).copy()
+                df = df.head(df.__len__() - WINDOW_SIZE + 1)
+                fig = px.line(title=f"{company}: Historic data + Predictions")
                 fig.add_scatter(x=df.index, y=df["cloture"], mode="lines", name="Actual")
-                fig.add_scatter(x=df_pred.index, y=df_pred["cloture"], mode="lines", name="Predicted", line=dict(dash="dash"))
+                fig.add_scatter(x=df_pred.index, y=df_pred["cloture"], mode="lines", name="Predicted", line=dict(color="yellow"))
                 fig.update_xaxes(rangeslider_visible=True)
                 st.plotly_chart(fig, use_container_width=True)
 

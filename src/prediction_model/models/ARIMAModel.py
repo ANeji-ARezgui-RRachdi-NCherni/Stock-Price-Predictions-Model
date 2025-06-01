@@ -14,7 +14,7 @@ class ARIMAModel(IModel):
         model = ARIMA(features, order=(2,1,5)) # the order was found when running auto_arima method which generated the best orders
         model_fit = model.fit()
         self.model = model_fit
-        self.__last_trained_date = max(last_trained_date, self.__last_trained_date)
+        self.last_trained_date = max(last_trained_date, self.last_trained_date) if self.last_trained_date != None else last_trained_date
     
     def predict(self, input_data):
         numberOfDays = len(input_data)

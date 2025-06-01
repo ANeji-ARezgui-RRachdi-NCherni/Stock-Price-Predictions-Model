@@ -10,8 +10,8 @@ class IModel(ABC):
     """
     @abstractmethod
     def __init__(self, stock_name: str = None):
-        self.__last_trained_date = None
-        self.__stock_name = stock_name
+        self.last_trained_date = None
+        self.stock_name = stock_name
 
     @abstractmethod
     def train(self, features: np.ndarray, targets: np.ndarray, last_trained_date: datetime):
@@ -73,7 +73,7 @@ class IModel(ABC):
                 raise NotImplementedError("This metric isn't implemented yet, if you want to use it please add its implementation")
     
     def get_last_trained_date(self) -> datetime:
-        return self.__last_trained_date
+        return self.last_trained_date
 
     def get_stock_name(self) -> str:
-        return self.__stock_name
+        return self.stock_name
