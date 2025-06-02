@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.params import Body
 from fastapi.middleware.cors import CORSMiddleware
 import os, sys
 from pathlib import Path
@@ -6,10 +7,11 @@ import subprocess
 import pandas as pd
 sys.path.insert(0, str(Path(os.path.dirname(__file__)) / '..' / '..' / '..'))
 from utils import predict
-from src import get_model, get_scaler, CacheService
+from src import get_model, get_scaler, CacheService, create_agents_graph
 from dotenv import load_dotenv
 from dateutil.relativedelta import relativedelta
 import json
+
 
 load_dotenv()
 
@@ -90,3 +92,17 @@ def get_stock(company: str):
     except Exception as e:
         print(str(e))
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+@app.post("/rag")
+def rag_query(query: str = Body(...)):
+    """
+    Endpoint to handle RAG queries.
+    """
+    agents = create_agents_graph()
+    try:
+        input = {"question": query}
+        response = agents.invoke(input, stream_mode="values")
+        return {"response": response}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))    

@@ -27,8 +27,6 @@ dependencies:
       - pinecone-client
       - langchain-pinecone
       - pinecone-notebooks
-      - chonkie
-      - markitdown
       - azure-identity
       - joblib
       - starlette>=0.27.0,<0.28.0
