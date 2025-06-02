@@ -4,8 +4,8 @@ from langchain_core.prompts import ChatPromptTemplate
 
 class NewsAgent(IGenerator):
     def __init__(self):
-        self.prompt = self.create_prompt()
-        super().__init__(temperature=0)
+        prompt = self.create_prompt()
+        super().__init__(prompt=prompt,temperature=0)
 
     
     
@@ -21,28 +21,6 @@ class NewsAgent(IGenerator):
         Returns:
             str: The generated prompt.
         """
-        # table_instructions = """
-        # Some of the retrieved information is presented in table format. When using information from tables:
-        # 1. Present tabular data using proper markdown table formatting with headers, like this:
-        #     | Column1 | Column2 | Column3 |
-        #     |---------|---------|---------|
-        #     | Value1  | Value2  | Value3  |
-        # 2. Re-format the table structure to make it easier to read and understand
-        # 3. If any new component is introduced during re-formatting of the table, mention it explicitly
-        # 4. Clearly interpret the tabular data in your response
-        # 5. Reference the relevant table when presenting specific data points
-        # 6. If appropriate, summarize trends or patterns shown in the tables
-        # 7. If only reference numbers are mentioned and you can fetch the corresponding values like research paper title or authors from the context, replace the reference numbers with the actual values
-        # """
-        # response_format_instructions = """Instructions:
-        # 1. Answer the query based ONLY on the information provided in the context.
-        # 2. If the context doesn't contain relevant information to answer the query, state: "I don't have enough information to answer this question based on the provided context."
-        # 3. Do not use prior knowledge not contained in the context.
-        # 5. Be concise and accurate.
-        # 6. Provide a well-structured response with heading, sub-headings and tabular structure if required in markdown format based on retrieved knowledge. Keep the headings and sub-headings small sized.
-        # 7. Only provide sections that are meaningful to have in a chatbot reply. For example, do not explicitly mention references.
-        # 8. If values are involved, make sure to respond with perfect values present in context. Do not make up values.
-        # 9. Do not repeat the question in the answer or response."""
 
         prompt = ChatPromptTemplate.from_messages(
                 [
@@ -84,7 +62,6 @@ class NewsAgent(IGenerator):
                     ),
             ]
             )
-        print("News Agent Prompt Created")
         return prompt
 
     

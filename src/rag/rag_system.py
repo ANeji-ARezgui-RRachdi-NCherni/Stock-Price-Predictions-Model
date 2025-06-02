@@ -1,18 +1,24 @@
 from typing import List, TypedDict
 from langgraph.graph import StateGraph, END,  START
 from langchain_core.documents import Document
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import time
 import os
 from dotenv import load_dotenv
+
 from .agents import *
 from .pinecone_vector_store import get_pinecone_vector_store
 
 
 
 load_dotenv()
-embedding_model = os.getenv("EMBEDDING_MODEL")
 index_name = os.getenv("INDEX_NAME")
+
+
+n_agent = NewsAgent()
+s_agent = StockAgent()
+r_agent = RecommenderAgent()
+vector_store = get_pinecone_vector_store(index_name)
+
 
 class State(TypedDict):
     """
@@ -21,10 +27,10 @@ class State(TypedDict):
     Attributes:
         question: question
         generation: LLM generation
+        topic: topic of the question('news', 'stocks', 'recommendation')
         documents: list of documents
     """
     question: str
-    embedded_question: List[float] = []
     documents: List[Document]= []
     topic: str = ""
     generation :str =""
@@ -55,8 +61,7 @@ def check_topic_relevency(state:State):
     Returns:
         str: Next node to call
     """
-    question = state["question"]
-    source = topic_checker.invoke({"question": question})
+    source = topic_checker.invoke({"question": state["question"]})
     if source.datasource == "off_topic":
         return "off_topic"
     elif source.datasource == "rag":
@@ -75,23 +80,8 @@ def classify_question(state:State):
     """
     question = state["question"]
     topic = input_classifer.invoke({"user_input": question})
-    return {"topic": topic.topic, "question": question}
+    return {"topic": topic.topic}
 
-@log_execution_time
-def embed_question(state:State):
-    """
-    Embed the question using the embedding model.
-
-    Args:
-        state (State): The state of the graph.
-
-    Returns:
-        state (dict): The state of the graph with the embedded question in a new key.
-    """
-    question = state["question"]
-    query_embeddings = GoogleGenerativeAIEmbeddings(model =embedding_model, task_type="RETRIEVAL_QUERY") 
-    q_embed = query_embeddings.embed_query(text=question)
-    return {"embedded_question": q_embed, "question": question}
 
 @log_execution_time
 def retrieve(state:State):
@@ -104,31 +94,23 @@ def retrieve(state:State):
     Returns:
         state(dict): The state of the graph with the retrieved documents in a new key.    
     """
-    embedded_question = state["embedded_question"]
-    question = state["question"]
     topic = state["topic"]
-    vector_store = get_pinecone_vector_store(index_name)
-
-    if topic == "news":
-        filter = {"source": "news"}
-    elif topic == "stocks":
-        filter = {"source": "stock_data"}
-    else:
-        filter = None      
-
-    documents = vector_store.similarity_search_by_vector_with_score(
-        embedding=embedded_question,
-        k= 7,
-        filter=filter
-    )
-    return {"documents": documents ,  "question": question }
+    filter = {'source' : topic} if topic != "recommendation" else None
+    retriever =vector_store.as_retriever(
+    search_type="similarity",
+    search_kwargs={
+        "k": 7, 
+        "filter": filter  
+    },
+)
+    documents = retriever.invoke(input=state["question"])
+    return {"documents": documents }
 
 @log_execution_time
 def transform_query(state:State):
     """
     Rewrite the question for better understanding or relevance.
     """
-    print("rewriting question")
     better_question = question_rewriter.invoke({"question": state["question"]})
     return {"question": better_question}
 
@@ -136,15 +118,16 @@ def transform_query(state:State):
 def off_topic(state:State):
     """
     Response for user questions that are off topic.
-
+    Args:
+        state (State): The state of the graph.
     Returns:
-        state (dict): returns the state with a response indicating the question is off topic.
+        state (dict): adds  a response to the state indicating the question is off topic.
     """
-    response = "I'm sorry, I only answer questions related to the Tunisian stock market and related news."
-    return {"generation" : response}
+    response = off_topic_responder.invoke({"question": state["question"]})
+    return {"generation": response}
 
 @log_execution_time
-def generate(state:State):
+def generate_news(state:State):
     """
     Generate a response based on the question and documents.
 
@@ -154,31 +137,74 @@ def generate(state:State):
     Returns:
         state (dict): The state of the graph with the generated response in a new key.
     """
-    question = state["question"]
-    top_contexts = state["documents"]
-    topic = state["topic"]
-    match topic:
-        case "news":
-            agent = NewsAgent()
-        case "stocks":
-            agent = StockAgent()
-        case "recommendation":
-            agent = RecommenderAgent()
-                
+    agent = n_agent     
     generation_chain = agent.get_decision_chain()
-    generation = generation_chain.invoke({"question": question, "context": top_contexts, "topic" : state["topic"]})
-    return {"generation": generation, "question": question}
+    generation = generation_chain.invoke({"question": state["question"], "context": state["documents"]})
+    return {"generation": generation}
+
+@log_execution_time
+def generate_stocks(state:State):
+    """
+    Generate a response based on the question and documents.
+
+    Args:
+        state (State): The state of the graph.
+
+    Returns:
+        state (dict): The state of the graph with the generated response in a new key.
+    """
+    agent = s_agent     
+    generation_chain = agent.get_decision_chain()
+    generation = generation_chain.invoke({"question": state["question"], "context": state["documents"]})
+    return {"generation": generation}
+@log_execution_time
+def generate_recommendation(state:State):
+    """
+    Generate a response based on the question and documents.
+
+    Args:
+        state (State): The state of the graph.
+
+    Returns:
+        state (dict): The state of the graph with the generated response in a new key.
+    """
+    agent = r_agent     
+    generation_chain = agent.get_decision_chain()
+    generation = generation_chain.invoke({"question": state["question"], "context": state["documents"]})
+    return {"generation": generation}
+
+@log_execution_time
+def grade_answer(state:State):
+    """
+    Grade the generated answer.
+
+    Args:
+        state (State): The state of the graph.
+
+    Returns:
+        state (dict): The state of the graph with the graded answer in a new key.
+    """
+    grade = answer_grader_agent.invoke({"question": state["question"], "answer": state["generation"]})
+    return grade.binary_score
+
+@log_execution_time
+def route_query(state:State):
+    """
+    passes the topic of the question to the next node, to decide which agent to use.
+    """
+    return state["topic"]
 
 
 def create_agents_graph():
 
     workflow = StateGraph(State)
 
-    workflow.add_node("classify_question",classify_question )
     workflow.add_node("off_topic", off_topic) 
-    workflow.add_node("embed_question", embed_question)
+    workflow.add_node("classify_question", classify_question)
     workflow.add_node("retrieve", retrieve)
-    workflow.add_node("generate", generate)
+    workflow.add_node("generate_news", generate_news)
+    workflow.add_node("generate_stocks", generate_stocks)
+    workflow.add_node("generate_recommendation", generate_recommendation)
     workflow.add_node("transform_query", transform_query)
 
     workflow.add_conditional_edges(
@@ -190,12 +216,44 @@ def create_agents_graph():
             }   
         )    
     workflow.add_edge("off_topic", END)
-    workflow.add_edge("classify_question", "embed_question")
-    workflow.add_edge("embed_question","retrieve")
-    workflow.add_edge("retrieve","generate")
-    workflow.add_edge("generate",END )
+    workflow.add_edge("classify_question","retrieve")
+    workflow.add_conditional_edges(
+        "retrieve",
+        route_query,
+        {
+            "news": "generate_news",
+            "stocks": "generate_stocks",
+            "recommendation": "generate_recommendation"
+        })
+    workflow.add_conditional_edges(
+        "generate_news",
+        grade_answer,
+        {
+            "yes":END,
+            "no": "transform_query"
+        }
+    )
+    workflow.add_conditional_edges(
+        "generate_stocks",
+        grade_answer,
+        {
+            "yes":END,
+            "no": "transform_query"
+        }
+    )
+    workflow.add_conditional_edges(
+        "generate_recommendation",
+        grade_answer,
+        {
+            "yes":END,
+            "no": "transform_query"
+        }
+    )
+    workflow.add_edge("transform_query", "retrieve")
 
     app = workflow.compile()
-
+    
     return app
+
+
 

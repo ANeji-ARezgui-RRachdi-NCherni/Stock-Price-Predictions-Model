@@ -4,8 +4,8 @@ from langchain_core.prompts import ChatPromptTemplate
 
 class RecommenderAgent(IGenerator):
     def __init__(self):
-        self.prompt = self.create_prompt()
-        super().__init__(temperature=0)
+        prompt = self.create_prompt()
+        super().__init__(prompt=prompt,temperature=0)
 
     
     
@@ -66,7 +66,6 @@ class RecommenderAgent(IGenerator):
                     ),
             ]
             )
-        print("REcom Agent Prompt Created")
         return prompt
 
     

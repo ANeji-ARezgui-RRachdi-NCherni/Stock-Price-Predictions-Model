@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-model_name = os.getenv('LLM_MODEL')
+model_name = os.getenv('SIMPLE_TASK_MODEL')
 api_key= os.getenv("GOOGLE_API_KEY_1")
 
 # Data model

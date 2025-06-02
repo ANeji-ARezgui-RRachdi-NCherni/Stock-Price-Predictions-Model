@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+import asyncio
 import gc
 import torch
 import os
@@ -11,6 +12,21 @@ sys.path.insert(0, str(Path(os.path.dirname(__file__)) / '..' / '..'/ '..'))
 from rag.rag_system import create_agents_graph
 
 torch.classes.__path__ = []
+
+async def handle_async_response(prompt):
+    full_response = "" 
+    message_placeholder = st.empty()
+    
+    with st.spinner("Thinking...", show_time=True):
+        inputs = {"question": prompt}
+
+    async for output in st.session_state.agents.astream(inputs, stream_mode="messages"):
+        full_response += output[0].content
+        if len(full_response) > 0:
+            message_placeholder.markdown(full_response + "▌")  
+
+    message_placeholder.markdown(full_response)
+    return 'full_response'
 
 st.set_page_config(page_title="StockWise", page_icon="📈", layout="centered")
 st.header("💬 AI Chat Assistant")
@@ -46,7 +62,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Accept user input
-if prompt := st.chat_input("Ask about Tunisian stocks and related news"):
+if prompt := st.chat_input("Ask me"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
     # Display user message in chat message container
@@ -58,27 +74,7 @@ if prompt := st.chat_input("Ask about Tunisian stocks and related news"):
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        message_placeholder = st.empty()
-        full_response = ""
-        with st.spinner("Thinking...",show_time=True):
-            inputs = {"question": prompt}
-            for output in st.session_state.agents.stream(inputs):
-                for key, value in output.items():
-                    continue
-            result = value["generation"]
-                
-        words = result.split(' ')
-        # Simulate stream of response with milliseconds delay
-        for i, word in enumerate(words):
-            full_response += word
-            if i < len(words) - 1:  # Don't add newline to the last line
-                full_response += ' '
-            
-            # Add a blinking cursor to simulate typing
-            message_placeholder.markdown(full_response + "▌")
-            time.sleep(0.20)
-
-        message_placeholder.markdown(full_response) 
+       full_response =  asyncio.run(handle_async_response(prompt))
             
                 
     # Add assistant response to chat history

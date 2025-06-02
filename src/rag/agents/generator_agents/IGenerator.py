@@ -5,14 +5,15 @@ import os
 from abc import ABC, abstractmethod
 
 dotenv.load_dotenv()
-model_name = os.environ.get("LLM_MODEL")
+model_name = os.environ.get("GENERATIVE_MODEL")
 
 class IGenerator(ABC):
     """
     An absract class for the response generator agents.
     """
 
-    def __init__(self,temperature: float = 0):
+    def __init__(self,prompt, temperature: float = 0):
+        self.prompt = prompt
         self.decision_chain = None
         self.generative_llm = ChatGoogleGenerativeAI(model=model_name, temperature=temperature)
         self.__create_decision_chain()

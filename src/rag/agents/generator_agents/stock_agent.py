@@ -4,8 +4,8 @@ from langchain_core.prompts import ChatPromptTemplate
 
 class StockAgent(IGenerator):
     def __init__(self):
-        self.prompt = self.create_prompt()
-        super().__init__(temperature=0)
+        prompt = self.create_prompt()
+        super().__init__(prompt=prompt,temperature=0)
 
     
     
@@ -59,7 +59,6 @@ class StockAgent(IGenerator):
                     ),
             ]
             )
-        print("Stocks Agent Prompt Created")
         return prompt
 
     

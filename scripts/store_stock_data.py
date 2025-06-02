@@ -109,14 +109,14 @@ def process_stock_data(df_list:List [pd.DataFrame]) -> List[str]:
         stock_data = " ".join(stock_data)
         if len(stock_data) > 40000: # pinecone limit is 40KB metadata size per document 
             stock_data = text_splitter.split_text(stock_data)
-            document1 = Document(page_content=stock_data[0], metadata={"title":stock ,"date":df['date'].iloc[-1], "link": STOCK_DATA_URL,"source": "stock_data"})
-            document2 = Document(page_content=stock_data[1], metadata={"title":stock ,"date":df['date'].iloc[-1], "link": STOCK_DATA_URL,"source": "stock_data"})
+            document1 = Document(page_content=stock_data[0], metadata={"title":stock ,"date":df['date'].iloc[-1], "link": STOCK_DATA_URL,"source": "stocks"})
+            document2 = Document(page_content=stock_data[1], metadata={"title":stock ,"date":df['date'].iloc[-1], "link": STOCK_DATA_URL,"source": "stocks"})
             id1 = "stock#"+stock+"#1"
             id2 = "stock#"+stock+"#2"
             documents.extend([document1, document2])
             ids.extend([id1, id2])
         else:
-            document = Document(page_content=stock_data, metadata={"title":stock ,"date":df['date'].iloc[-1], "link": STOCK_DATA_URL,"source": "stock data"})
+            document = Document(page_content=stock_data, metadata={"title":stock ,"date":df['date'].iloc[-1], "link": STOCK_DATA_URL,"source": "stocks"})
             id = "stock#"+stock+"#1"
             documents.append(document)
             ids.append(id)
