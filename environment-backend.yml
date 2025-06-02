@@ -20,11 +20,11 @@ dependencies:
       - torch
       - orjson
       - fastapi==0.100.0
-      - pydantic==2.7.4
+      - pydantic==1.10.8
       - uvicorn[standard]==0.22.0
       - python-dotenv
       - langchain
-      - langgraph==0.4.1
+      - langgraph==0.4.7
       - langchain-community
       - langchain-google-genai
       - pinecone-client
@@ -33,6 +33,6 @@ dependencies:
       - azure-identity
       - joblib
       - starlette>=0.27.0,<0.28.0
-      - httpx>=0.25.2
+      - httpx>=0.23.1,<0.24.0
       - dvc-azure
       - azure-ai-ml
