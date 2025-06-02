@@ -11,7 +11,7 @@ from langchain_community.document_loaders import WebBaseLoader
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(os.getcwd()) / '..'))
-from utils import get_pinecone_vector_store
+from src import get_pinecone_vector_store
 from utils import PAGE_URL, NEWS_BASE_URL
 
 
@@ -76,7 +76,7 @@ def process_urls(articles) -> list[Document]:
         urls (Sequence): Sequence of URLs to load data from.
     
     Returns:
-        splits: List of documents.
+        docs: List of documents.
         
     """
     bs4_strainer = SoupStrainer(class_=("inarticle txtbig"))
