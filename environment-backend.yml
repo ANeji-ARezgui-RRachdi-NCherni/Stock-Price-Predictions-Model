@@ -24,7 +24,7 @@ dependencies:
       - uvicorn[standard]==0.22.0
       - python-dotenv
       - langchain
-      - langgraph
+      - langgraph==0.4.1
       - langchain-community
       - langchain-google-genai
       - pinecone-client

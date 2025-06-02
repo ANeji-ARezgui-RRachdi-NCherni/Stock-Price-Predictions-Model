@@ -26,7 +26,7 @@ dependencies:
       - python-dotenv
       - requests_cache
       - langchain
-      - langgraph
+      - langgraph==0.4.1
       - langchain-community
       - langchain-google-genai
       - pinecone-client
