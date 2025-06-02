@@ -7,7 +7,9 @@ import subprocess
 import pandas as pd
 sys.path.insert(0, str(Path(os.path.dirname(__file__)) / '..' / '..' / '..'))
 from utils import predict
-from src import get_model, get_scaler, CacheService, create_agents_graph
+from src import get_model, get_scaler, CacheService
+sys.path.insert(0, str(Path(os.path.dirname(__file__)) / '..' / '..'))
+from rag import create_agents_graph
 from dotenv import load_dotenv
 from dateutil.relativedelta import relativedelta
 import json

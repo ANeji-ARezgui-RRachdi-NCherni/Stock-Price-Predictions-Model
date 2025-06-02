@@ -32,8 +32,6 @@ dependencies:
       - pinecone-client
       - langchain-pinecone
       - pinecone-notebooks
-      - chonkie
-      - markitdown
       - azure-ai-ml
       - azure-identity
       - joblib
