@@ -11,6 +11,7 @@ from src.handlers.model_handler import get_or_create_model, save_model
 from src.handlers.scaler_handler import get_or_create_scaler, save_scaler
 from utils.train_test_utils import train_model, evaluate
 from enums import ValidationMetricEnum
+from utils import send_email
 
 # Configure logging
 logging.basicConfig(
@@ -72,6 +73,23 @@ def train():
                     f"Model '{full_model_name}' (last trained on {last_trained_date}) exceeded the evaluation threshold for {ValidationMetricEnum.MAPE.name}: "
                     f"threshold={MODEL_EVAL_THRESHHOLD}, result={model_evaluation[full_model_name]}"
                 )
+                # Send email notification
+                recipient_email = os.environ.get("EMAIL_RECIPIENT")
+                if recipient_email:
+                    subject = f"Model Evaluation Alert: {full_model_name} Exceeded Threshold"
+                    body = (
+                        f"Model Evaluation Alert:\n\n"
+                        f"Model Name: {full_model_name}\n"
+                        f"Evaluation Metric: {ValidationMetricEnum.MAPE.name}\n"
+                        f"Threshold Value: {MODEL_EVAL_THRESHHOLD}\n"
+                        f"Actual Result: {model_evaluation[full_model_name]}\n"
+                        f"Last Trained Date: {last_trained_date}\n\n"
+                        f"Please review the model's performance."
+                    )
+                    send_email(recipient_email, subject, body)
+                    logger.info(f"Sent evaluation alert email to {recipient_email} for model {full_model_name}")
+                else:
+                    logger.warning("EMAIL_RECIPIENT not set. Skipping alert email.")
             else:
                 logger.info(
                     f"Model '{full_model_name}' (last trained on {last_trained_date}) passed evaluation for {ValidationMetricEnum.MAPE.name}: "
