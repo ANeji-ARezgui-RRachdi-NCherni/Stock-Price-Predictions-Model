@@ -4,6 +4,7 @@ from streamlit.testing.v1 import AppTest
 
 @patch.dict(os.environ, {"BACKEND_URL": "http://localhost:8000"})
 @patch.dict(os.environ, {"FRONTEND_CACHE_EXPIRATION_TIME": "28800"})
+@patch.dict(os.environ, {"WINDOW_SIZE": "1"})
 @patch("requests_cache.CachedSession.get")
 
 ## TODO: We should Add other tests after implemeting the other widgets (1 test per widget at least)

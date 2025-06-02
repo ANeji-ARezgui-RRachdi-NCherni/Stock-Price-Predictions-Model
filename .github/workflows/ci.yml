@@ -3,8 +3,7 @@ name: Python CI
 on:
   pull_request:
     branches:
-      - master  # Trigger on PRs targeting the `master` branch
-      - main    # Trigger on PRs targeting the `main` branch
+      - main
 env:
   KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
 
@@ -40,7 +39,7 @@ jobs:
       run: |
         source $HOME/miniconda/bin/activate
         conda activate Stock_Price_Prediction
-        
+
         # Set PYTHONPATH to include the project root
         export PYTHONPATH=$PYTHONPATH:$(pwd)
         

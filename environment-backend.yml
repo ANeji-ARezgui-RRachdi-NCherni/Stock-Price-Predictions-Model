@@ -1,16 +1,15 @@
-name: Stock_Price_Prediction
+name: stock-backend
+channels:
+  - conda-forge
+
 dependencies:
-  - python=3.11.0
+  - python=3.11
   - pandas
   - numpy
   - scikit-learn
   - keras
-  - statsmodels
-  - pmdarima
-  - jupyter
-  - matplotlib
-  - pytest
   - pip
+
   - pip:
       - valkey
       - "valkey[hiredis]"
@@ -20,11 +19,7 @@ dependencies:
       - fastapi==0.100.0
       - pydantic==1.10.8
       - uvicorn[standard]==0.22.0
-      - streamlit
-      - requests
-      - plotly
       - python-dotenv
-      - requests_cache
       - langchain
       - langgraph
       - langchain-community
@@ -34,8 +29,8 @@ dependencies:
       - pinecone-notebooks
       - chonkie
       - markitdown
-      - azure-ai-ml
       - azure-identity
       - joblib
       - starlette>=0.27.0,<0.28.0
       - httpx>=0.23.1,<0.24.0
+      - dvc-azure

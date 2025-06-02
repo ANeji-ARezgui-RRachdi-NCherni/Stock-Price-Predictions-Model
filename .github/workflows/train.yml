@@ -3,9 +3,18 @@ name: Azure ML Training Pipeline
 on:
   push:
     paths:
-      - data/processed/**  # Trigger when processed data is updated
+      - data/processed/**
     branches:
       - main
+  workflow_dispatch:
+
+env:
+  KERAS_BACKEND: ${{ vars.KERAS_BACKEND }}
+  MODEL_NAME: ${{ vars.MODEL_NAME }}
+  WINDOW_SIZE: ${{ vars.WINDOW_SIZE }}
+  AZURE_RESOURCE_GROUP:   ${{ secrets.AZURE_RESOURCE_GROUP }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  AZURE_ML_WORKSPACE:     ${{ secrets.AZURE_ML_WORKSPACE }}
 
 jobs:
   train-model:
@@ -47,6 +56,10 @@ jobs:
 
       - name: Run Training Job
         shell: bash -l {0}
+        env:
+          AZURE_RESOURCE_GROUP:   ${{ secrets.AZURE_RESOURCE_GROUP }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_ML_WORKSPACE:     ${{ secrets.AZURE_ML_WORKSPACE }}
         run: |
           source $HOME/miniconda/bin/activate
           conda activate Stock_Price_Prediction
@@ -60,4 +73,5 @@ jobs:
           echo "PYTHONPATH: $PYTHONPATH"
 
           # Run the training script
-          echo "Training model on Azure ML (To be implemented)"
+          echo "Training model on Azure ML"
+          python -m scripts.train_model
