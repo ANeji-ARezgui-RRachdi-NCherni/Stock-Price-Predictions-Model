@@ -13,6 +13,7 @@ dependencies:
   - statsmodels
   - pmdarima
   - jupyter
+  - pydantic==1.10.8
   - pip:
       - valkey
       - "valkey[hiredis]"
@@ -20,11 +21,10 @@ dependencies:
       - torch
       - orjson
       - fastapi==0.100.0
-      - pydantic==1.10.8
       - uvicorn[standard]==0.22.0
       - python-dotenv
       - langchain
-      - langgraph==0.4.7
+      - langgraph
       - langchain-community
       - langchain-google-genai
       - pinecone-client
