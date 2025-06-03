@@ -28,7 +28,7 @@ def test_data_and_predict_widget(mock_get):
 
     mock_get.side_effect = side_effect
 
-    at = AppTest.from_file("src/web/front/app.py")
+    at = AppTest.from_file("src/web/front/home.py")
     at.run(timeout=10)
 
     at.button._list[1].click()
