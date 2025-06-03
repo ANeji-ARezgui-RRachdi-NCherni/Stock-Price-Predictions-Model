@@ -10,6 +10,7 @@ dependencies:
   - jupyter
   - matplotlib
   - pytest
+  - pydantic==1.10.8
   - pip
   - pip:
       - valkey
@@ -18,7 +19,6 @@ dependencies:
       - torch
       - orjson
       - fastapi==0.100.0
-      - pydantic==1.10.8
       - uvicorn[standard]==0.22.0
       - streamlit
       - requests

@@ -23,8 +23,9 @@ def _get_ml_client() -> MLClient:
 
 def get_or_create_scaler(stock: str, model_location: str) -> MinMaxScaler:
     scaler = get_scaler(stock, model_location)
-    if scaler == None:
+    if scaler is None:
         return MinMaxScaler()
+    return scaler
 
 def get_scaler(stock: str, model_location: str) -> MinMaxScaler | None:
     if model_location == "LOCAL":
@@ -37,10 +38,10 @@ def get_scaler(stock: str, model_location: str) -> MinMaxScaler | None:
     elif model_location == "AZURE":
         ml_client = _get_ml_client()
         try:
-            scaler_asset = ml_client.models.get(name=stock)
+            scaler_asset = ml_client.models.get(name=f"{stock}-scaler" , latest_version=True)
             download_dir = os.path.join("outputs", stock)
             os.makedirs(download_dir, exist_ok=True)
-            ml_client.models.download(name=stock,
+            ml_client.models.download(name=f"{stock}-scaler",
                                     version=scaler_asset.version,
                                     download_path=download_dir)
             scaler_path = os.path.join(download_dir, "scaler.pkl")
@@ -66,7 +67,7 @@ def save_scaler(scaler: MinMaxScaler, model_location: str, stock: str):
         ml_client = _get_ml_client()
         scaler_asset = ScalerModel(
             path=outputs_dir,
-            name=stock,
+            name=f"{stock}-scaler",
             type=AssetTypes.CUSTOM_MODEL,
             description="MinMaxScaler bundle"
         )
