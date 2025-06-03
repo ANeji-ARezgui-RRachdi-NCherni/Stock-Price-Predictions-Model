@@ -39,11 +39,11 @@ def get_model(stock: str, model_location: str) -> IModel | None:
         ml_client = _get_ml_client()
         try:
             # Get latest version of the registered model
-            model_asset = ml_client.models.get(name=stock)
+            model_asset = ml_client.models.get(name=f"{stock}-model", latest_version=True)
             # Download to local outputs folder
             download_dir = os.path.join("outputs", stock)
             os.makedirs(download_dir, exist_ok=True)
-            ml_client.models.download(name=stock,
+            ml_client.models.download(name=f"{stock}-model",
                                     version=model_asset.version,
                                     download_path=download_dir)
             model_path = os.path.join(download_dir, "model.pkl")
@@ -70,7 +70,7 @@ def save_model(model: IModel, model_location: str, stock: str):
         ml_client = _get_ml_client()
         model_asset = Model(
             path=outputs_dir,
-            name=stock,
+            name=f"{stock}-model",
             type=AssetTypes.CUSTOM_MODEL,
             description=f"Model bundle for {stock}"
         )
