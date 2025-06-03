@@ -7,7 +7,9 @@ import subprocess
 import pandas as pd
 sys.path.insert(0, str(Path(os.path.dirname(__file__)) / '..' / '..' / '..'))
 from utils import predict
-from src import get_model, get_scaler, CacheService, create_agents_graph
+from src import get_model, get_scaler, CacheService
+sys.path.insert(0, str(Path(os.path.dirname(__file__)) / '..' / '..'))
+from rag import create_agents_graph
 from dotenv import load_dotenv
 from dateutil.relativedelta import relativedelta
 import json
@@ -21,6 +23,7 @@ BACKEND_CACHE_CONNECTION_STRING = os.environ.get("BACKEND_CACHE_CONNECTION_STRIN
 BACKEND_CACHE_EXPIRATION_TIME = int(os.environ.get("BACKEND_CACHE_EXPIRATION_TIME")) if os.environ.get("BACKEND_CACHE_EXPIRATION_TIME") != None else 0
 
 cacheService = CacheService.getInstance(BACKEND_CACHE_CONNECTION_STRING, DISABLE_BACKEND_CACHE, BACKEND_CACHE_EXPIRATION_TIME)
+agents = create_agents_graph()
 
 app = FastAPI()
 
@@ -99,7 +102,6 @@ def rag_query(query: str = Body(...)):
     """
     Endpoint to handle RAG queries.
     """
-    agents = create_agents_graph()
     try:
         input = {"question": query}
         response = agents.invoke(input, stream_mode="values")

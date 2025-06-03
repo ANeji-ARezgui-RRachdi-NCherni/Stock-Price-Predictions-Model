@@ -17,7 +17,7 @@ cache_session = CachedSession('cache', expire_after=CACHE_EXPIRATION_TIME)
 st.set_page_config(page_title="StockWise", page_icon="📈", layout="wide")
 
 # Define navigation pages
-PAGES = ["Home", "Data & Predict", "News"]
+PAGES = ["Home", "Data & Predict", "News & Insights"]
 params = st.query_params
 current_page = params.get("page", "Home")
 if current_page not in PAGES:

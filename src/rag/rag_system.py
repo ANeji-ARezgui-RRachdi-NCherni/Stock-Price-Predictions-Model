@@ -196,6 +196,7 @@ def route_query(state:State):
 
 
 def create_agents_graph():
+    print('Creating agents graph...')
 
     workflow = StateGraph(State)
 
