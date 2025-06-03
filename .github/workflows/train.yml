@@ -22,6 +22,15 @@ env:
   SMTP_SENDER_EMAIL: ${{ vars.SMTP_SENDER_EMAIL }}
   SMTP_SENDER_PASSWORD: ${{ secrets.SMTP_SENDER_PASSWORD }}
   EMAIL_RECIPIENT: ${{ vars.EMAIL_RECIPIENT }}
+  LANGSMITH_API_KEY:      ${{ secrets.LANGSMITH_API_KEY }}
+  GOOGLE_API_KEY:         ${{ secrets.GOOGLE_API_KEY }}
+  GOOGLE_API_KEY_1:       ${{ secrets.GOOGLE_API_KEY_1 }}
+  USER_AGENT:             ${{ secrets.USER_AGENT }}
+  GENERATIVE_MODEL:       ${{ secrets.GENERATIVE_MODEL }}
+  SIMPLE_TASK_MODEL:      ${{ secrets.SIMPLE_TASK_MODEL }}
+  EMBEDDING_MODEL:        ${{ secrets.EMBEDDING_MODEL }}
+  PINECONE_API_KEY:       ${{ secrets.PINECONE_API_KEY }}
+  INDEX_NAME:             ${{ secrets.INDEX_NAME }}
 
 jobs:
   train-model:
