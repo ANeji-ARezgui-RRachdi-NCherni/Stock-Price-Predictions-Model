@@ -22,4 +22,4 @@ ENV WINDOW_SIZE=""
 
 SHELL ["/bin/bash", "-lc"]
 
-ENTRYPOINT ["bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && conda activate stock-frontend && streamlit run src/web/front/app.py --server.port 8501 --server.address 0.0.0.0"]
+ENTRYPOINT ["bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && conda activate stock-frontend && streamlit run src/web/front/home.py --server.port 8501 --server.address 0.0.0.0"]
