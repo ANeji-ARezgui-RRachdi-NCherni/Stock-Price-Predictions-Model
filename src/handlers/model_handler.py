@@ -11,6 +11,7 @@ from pathlib import Path
 import pickle
 
 FILE_PATH = Path(os.path.dirname(__file__))
+REPO_PATH = FILE_PATH / '..' / '..'
 MODEL_LOCAL_PATH = FILE_PATH / '..' / '..' / 'pkl' / 'models'
 
 def _get_ml_client() -> MLClient:
@@ -39,7 +40,7 @@ def get_model(stock: str, model_location: str) -> IModel | None:
         ml_client = _get_ml_client()
         try:
             # Get latest version of the registered model
-            model_asset = ml_client.models.get(name=f"{stock}-model", latest_version=True)
+            model_asset = ml_client.models.get(name=f"{stock}-model", version=1)
             # Download to local outputs folder
             download_dir = os.path.join("outputs", stock)
             os.makedirs(download_dir, exist_ok=True)
@@ -47,6 +48,7 @@ def get_model(stock: str, model_location: str) -> IModel | None:
                                     version=model_asset.version,
                                     download_path=download_dir)
             model_path = os.path.join(download_dir, "model.pkl")
+            model_path = os.path.join(REPO_PATH, model_path)
             return joblib.load(model_path)
         except Exception:
             # Not registered yet: return None

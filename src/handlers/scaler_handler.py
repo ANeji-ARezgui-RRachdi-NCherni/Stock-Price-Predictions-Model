@@ -11,6 +11,7 @@ from azure.ai.ml.constants import AssetTypes
 
 
 FILE_PATH = Path(os.path.dirname(__file__))
+REPO_PATH = FILE_PATH / '..' / '..'
 SCALER_LOCAL_PATH = FILE_PATH / '..' / '..' / 'pkl' / 'scalers'
 
 def _get_ml_client() -> MLClient:
@@ -38,13 +39,14 @@ def get_scaler(stock: str, model_location: str) -> MinMaxScaler | None:
     elif model_location == "AZURE":
         ml_client = _get_ml_client()
         try:
-            scaler_asset = ml_client.models.get(name=f"{stock}-scaler" , latest_version=True)
+            scaler_asset = ml_client.models.get(name=f"{stock}-scaler", version=1)
             download_dir = os.path.join("outputs", stock)
             os.makedirs(download_dir, exist_ok=True)
             ml_client.models.download(name=f"{stock}-scaler",
                                     version=scaler_asset.version,
                                     download_path=download_dir)
             scaler_path = os.path.join(download_dir, "scaler.pkl")
+            scaler_path = os.path.join(str(REPO_PATH), scaler_path)
             return joblib.load(scaler_path)
         except Exception:
             return None
